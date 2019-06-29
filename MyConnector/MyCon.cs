@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace MyConnector
@@ -33,9 +34,16 @@ namespace MyConnector
         public string Server { get; set; }
         public string Database { get; set; }
         public bool IncludeSecurityAsserts { get; set; }
+
+        public List<CustomError> CustomErrors { get; set; }
         public MyCon(string connectionString)
         {
             this._connectionString = connectionString;
+
+            if (CustomErrors == null)
+            {
+                CustomErrors = new List<CustomError>();
+            }
         }
         public MyCon(string username, string password, string server, string database)
         {
@@ -44,6 +52,11 @@ namespace MyConnector
             Port = 3306;
             Server = server ?? throw new ArgumentNullException(nameof(server));
             Database = database ?? throw new ArgumentNullException(nameof(database));
+
+            if (CustomErrors == null)
+            {
+                CustomErrors = new List<CustomError>();
+            }
         }
         public MyCon(string username, string password, int port, string server, string database)
         {
@@ -52,6 +65,11 @@ namespace MyConnector
             Port = port;
             Server = server ?? throw new ArgumentNullException(nameof(server));
             Database = database ?? throw new ArgumentNullException(nameof(database));
+
+            if (CustomErrors == null)
+            {
+                CustomErrors = new List<CustomError>();
+            }
         }
 
         string getQuery(string cmdSQL, string chavePrimaria)
@@ -227,6 +245,17 @@ namespace MyConnector
 
         }
 
+        string GetErrorMessage(int errorCode)
+        {
+            //errors.Add(new Error() { Code = 1451, Message = "Este registro não pode ser removido pois contém dependências" });
+            if (CustomErrors.Where(x => x.Code == errorCode).FirstOrDefault() == null)
+            {
+                return null;
+            }
+
+            return CustomErrors.Find(x => x.Code == errorCode).Message;
+        }
+
         public void ExecuteTransaction(string cmdSQL)
         {
             try
@@ -244,9 +273,23 @@ namespace MyConnector
                 c.Transaction = MySQLTran;
                 c.ExecuteNonQuery();
             }
-            catch (Exception er)
+            catch (MySqlException mException)
             {
-                throw er;
+                this.RollBack();
+                string errorMessage = GetErrorMessage(mException.Number);
+                Exception exception = null;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    exception = new Exception(errorMessage, mException);
+                }
+                else
+                {
+                    exception = new Exception(mException.Message, mException);
+                }
+
+                Console.WriteLine(exception.ToString());
+                throw exception;
             }
         }
 
