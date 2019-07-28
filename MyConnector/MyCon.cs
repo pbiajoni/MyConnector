@@ -26,6 +26,7 @@ namespace MyConnector
 
         MySqlConnection MySQLConn = new MySqlConnection();
         MySqlTransaction MySQLTran;
+        MySqlCommand mySqlCommand;
 
         private string _connectionString;
         public string Username { get; set; }
@@ -268,10 +269,22 @@ namespace MyConnector
                     this.OnExecuteQuery(cmdSQL);
                 }
 
-                MySqlCommand c = new MySqlCommand(cmdSQL, MySQLConn);
-                c.CommandTimeout = 3600;
-                c.Transaction = MySQLTran;
-                c.ExecuteNonQuery();
+                if (mySqlCommand is null)
+                {
+                    MySqlCommand c = new MySqlCommand(cmdSQL, MySQLConn);
+                    c.CommandTimeout = 3600;
+                    c.Transaction = MySQLTran;
+                    c.ExecuteNonQuery();
+                }
+                else
+                {
+                    mySqlCommand.CommandText = cmdSQL;
+                    mySqlCommand.Connection = MySQLConn;
+                    mySqlCommand.CommandTimeout = 3600;
+                    mySqlCommand.Transaction = MySQLTran;
+                    mySqlCommand.ExecuteNonQuery();
+                    mySqlCommand = null;
+                }
             }
             catch (MySqlException mException)
             {
@@ -293,6 +306,14 @@ namespace MyConnector
             }
         }
 
+        public void NewCommand()
+        {
+            mySqlCommand = new MySqlCommand();
+        }
+        public void AddParameter(string parameterName, object value)
+        {
+            mySqlCommand.Parameters.AddWithValue(parameterName, value);
+        }
         /// <summary>
         /// Retorna a Id do registro criado
         /// </summary>
