@@ -33,6 +33,7 @@ namespace MyConnector.Mapping
 
         public FieldAction Compare(Field field)
         {
+            Console.WriteLine("Comparing " + field.Name);
             FieldAction fieldAction = new FieldAction();
             fieldAction.Field = field;
             fieldAction.Action = ActionType.None;
@@ -58,12 +59,12 @@ namespace MyConnector.Mapping
                 Console.WriteLine(field.Name + " was changed - param AllowNull");
             }
 
-            if ((field.Key != "UNI" && !string.IsNullOrEmpty(Key)) && (field.Key.Trim().ToUpper() != Key.Trim().ToUpper()))
-            {
-                fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Key", Action = ActionType.Update, Value = field.Key });
-                fieldAction.Action = ActionType.Update;
-                Console.WriteLine(field.Name + " was changed - param Key");
-            }
+            //if ((field.Key != "UNI" && !string.IsNullOrEmpty(Key)) && (field.Key.Trim().ToUpper() != Key.Trim().ToUpper()))
+            //{
+            //    fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Key", Action = ActionType.Update, Value = field.Key });
+            //    fieldAction.Action = ActionType.Update;
+            //    Console.WriteLine(field.Name + " was changed - param Key");
+            //}
 
             if (field.Default.Trim().ToUpper() != Default.Trim().ToUpper())
             {

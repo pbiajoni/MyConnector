@@ -121,7 +121,34 @@ namespace MyConnector.Examples
                 });
 
                 database.Tables.Add(Table);
-                database.ValidateTable("users");
+
+                Table = new Table("countries");
+                Table.AddIdField();
+                Table.AddVarCharField("name", 50);
+                database.Tables.Add(Table);
+
+                Table = new Table("states");
+                Table.AddIdField();
+                Table.AddIntField("country_id");
+                Table.AddVarCharField("name", 50);
+
+                Table.Indexes.Add(new Index() { KeyName = "fk_state_country", ColumnName = "country_id" });
+                Table.References.Add(new References("countries", "id", "country_id", "fk_state_country"));
+                database.Tables.Add(Table);
+
+                Table = new Table("cities");
+                Table.AddIdField();
+                Table.AddIntField("state_id");
+                Table.AddVarCharField("name", 100);
+
+                Table.References.Add(new References("states", "id", "state_id", "fk_city_state"));
+                database.Tables.Add(Table);
+
+                //database.ValidateTable("users");
+                //database.ValidateTable("countries");
+                database.ValidateTable("states");
+                database.ValidateTable("cities");
+
                 myCon.Commit();
             }
             catch (Exception er)
