@@ -115,6 +115,27 @@ namespace MyConnector.Mapping
             return GetCreateTable(this);
         }
 
+        public void AddIdField(string name)
+        {
+            if (Fields.Any(x => x.Name == name))
+            {
+                throw new Exception("the field name " + name + " already exists");
+            }
+
+            Fields.Add(new Field()
+            {
+                Name = name,
+                AllowNull = false,
+                Type = "INT(11)",
+                Key = "PRI",
+                Extra = "AUTO_INCREMENT"
+            });
+        }
+
+        public void AddIdField()
+        {
+            AddIdField("id");
+        }
         public void AddVarCharField(string name, int size, string defaultValue = "", string after = "")
         {
             if (Fields.Any(x => x.Name == name))
