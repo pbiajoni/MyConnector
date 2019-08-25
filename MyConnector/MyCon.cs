@@ -29,23 +29,43 @@ namespace MyConnector
         MySqlCommand mySqlCommand;
 
         private string _connectionString;
+        private string _dataBase;
         public string Username { get; set; }
         public string Password { get; set; }
         public int Port { get; set; }
         public string Server { get; set; }
         public string Database { get; set; }
+
         public bool IncludeSecurityAsserts { get; set; }
 
         public List<CustomError> CustomErrors { get; set; }
         public MyCon(string connectionString)
         {
             this._connectionString = connectionString;
+            this.Database = GetDBName(connectionString);
 
             if (CustomErrors == null)
             {
                 CustomErrors = new List<CustomError>();
             }
         }
+
+        private string GetDBName(string connectionString)
+        {
+            string[] splited = connectionString.Split(';');
+
+            foreach (string str in splited)
+            {
+                string[] param = str.Split('=');
+                if (param[0].ToLower().Contains("database"))
+                {
+                    return param[1];
+                }
+            }
+
+            return null;
+        }
+
         public MyCon(string username, string password, string server, string database)
         {
             Username = username ?? throw new ArgumentNullException(nameof(username));

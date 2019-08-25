@@ -24,6 +24,7 @@ namespace MyConnector.Mapping
         public Table(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
+
             GrantLists();
         }
 
@@ -43,6 +44,10 @@ namespace MyConnector.Mapping
             {
                 References = new List<References>();
             }
+
+            Engine = "InnoDB";
+            DefaultCharset = "utf8";
+            Collate = "utf8_unicode_ci";
         }
 
         public string GetCreateTable(Table table)
@@ -51,13 +56,34 @@ namespace MyConnector.Mapping
 
             foreach (Field field in table.Fields)
             {
-                cmd += "`" + field.Name + "` " + field.Type + " " + (!field.AllowNull ? "NOT NULL" : "") +
-                    " DEFAULT " + (string.IsNullOrEmpty(field.Default) ? "NULL" : field.Default) + " " + field.Extra + ",";
+                cmd += "`" + field.Name + "` " + field.Type + " ";
+
+                if (!field.AllowNull)
+                {
+                    if (!string.IsNullOrEmpty(field.Extra) && field.Extra.ToUpper() == "AUTO_INCREMENT")
+                    {
+                        cmd += "NOT NULL " + field.Extra + ",";
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(field.Default))
+                        {
+                            throw ExceptionManager.Exception("The default value must contain a value when not null.", table.Name, field.Name);
+                        }
+
+                        cmd += "NOT NULL DEFAULT " + field.Default + ",";
+                    }
+                }
+                else
+                {
+                    cmd += string.IsNullOrEmpty(field.Default) ? "DEFAULT NULL," : "DEFAULT " + field.Default + ",";
+                }
+
             }
 
             foreach (Field field in table.Fields)
             {
-                if (field.Key.ToUpper() == "PRI")
+                if (!string.IsNullOrEmpty(field.Key) && field.Key.ToUpper() == "PRI")
                 {
                     cmd += "PRIMARY KEY (`" + field.Name + "`),";
                 }
@@ -65,7 +91,7 @@ namespace MyConnector.Mapping
 
             foreach (Index index in table.Indexes)
             {
-                cmd += (index.Unique ? "UNIQUE " : "") + "KEY `" + index.KeyName + "` (`" + index.ColumnName + "`), ";
+                cmd += (index.Unique ? "UNIQUE " : "") + "KEY `" + index.KeyName + "` (`" + index.ColumnName + "`),";
             }
 
             foreach (References reference in table.References)
@@ -75,9 +101,12 @@ namespace MyConnector.Mapping
             }
 
             cmd = cmd.TrimEnd(',') + ") ";
-            cmd += (string.IsNullOrEmpty(table.Engine) ? "ENGINE=" + table.Engine : "") + " ";
-            cmd += (string.IsNullOrEmpty(table.DefaultCharset) ? "DEFAULT CHARSET=" + table.DefaultCharset : "") + " ";
-            cmd += (string.IsNullOrEmpty(table.Collate) ? "COLLATE=" + table.Collate : "") + " ";
+            cmd += (!string.IsNullOrEmpty(table.Engine) ? "ENGINE=" + table.Engine :
+                throw ExceptionManager.Exception("Engine value cannot be null", table.Name, "")) + " ";
+            cmd += (!string.IsNullOrEmpty(table.DefaultCharset) ? "DEFAULT CHARSET=" + table.DefaultCharset :
+                throw ExceptionManager.Exception("Default Charset value cannot be null", table.Name, "")) + " ";
+            cmd += (!string.IsNullOrEmpty(table.Collate) ? "COLLATE=" + table.Collate :
+                throw ExceptionManager.Exception("Collate value cannot be null", table.Name, "")) + " ";
 
             return cmd;
         }
