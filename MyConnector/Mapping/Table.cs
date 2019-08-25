@@ -97,7 +97,18 @@ namespace MyConnector.Mapping
             foreach (References reference in table.References)
             {
                 cmd += "CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
-                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`),";
+                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`)";
+
+                if (reference.OnDeleteAction != OnDelete.Restrict)
+                {
+                    cmd += " ON DELETE " + Utils.GetEnumDescription(reference.OnDeleteAction) + ",";
+                }
+
+                if (reference.OnUpdateAction != OnUpdate.Restrict)
+                {
+                    cmd = cmd.TrimEnd(',');
+                    cmd += " ON UPDATE " + Utils.GetEnumDescription(reference.OnUpdateAction) + ",";
+                }
             }
 
             cmd = cmd.TrimEnd(',') + ") ";
@@ -117,10 +128,7 @@ namespace MyConnector.Mapping
 
         public void AddIdField(string name)
         {
-            if (Fields.Any(x => x.Name == name))
-            {
-                throw new Exception("the field name " + name + " already exists");
-            }
+            FieldExists(name);
 
             Fields.Add(new Field()
             {
@@ -136,12 +144,28 @@ namespace MyConnector.Mapping
         {
             AddIdField("id");
         }
+
+        public void AddIntField(string name, int size, bool allowNull = true, int defaultValue = -1, string after = "")
+        {
+            FieldExists(name);
+
+            Fields.Add(new Field()
+            {
+                Name = name,
+                AllowNull = true,
+                Type = "INT(" + size.ToString() + ")",
+                Default = (defaultValue > -1 ? defaultValue.ToString() : null),
+                After = after
+            });
+        }
+
+        public void AddIntField(string name)
+        {
+            AddIntField(name, 11, true, -1, "");
+        }
         public void AddVarCharField(string name, int size, string defaultValue = "", string after = "")
         {
-            if (Fields.Any(x => x.Name == name))
-            {
-                throw new Exception("the field name " + name + " already exists");
-            }
+            FieldExists(name);
 
             Fields.Add(new Field()
             {
@@ -151,6 +175,16 @@ namespace MyConnector.Mapping
                 Type = "VARCHAR(" + size.ToString() + ")",
                 After = after
             });
+        }
+
+        bool FieldExists(string name)
+        {
+            if (Fields.Any(x => x.Name == name))
+            {
+                throw new Exception("the field name " + name + " already exists");
+            }
+
+            return false;
         }
     }
 }
