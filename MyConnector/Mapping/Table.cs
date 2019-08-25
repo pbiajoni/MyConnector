@@ -50,7 +50,8 @@ namespace MyConnector.Mapping
 
             foreach (Field field in table.Fields)
             {
-                cmd += "`" + field.Name + "` " + field.Type + " " + (!field.AllowNull ? "NOT NULL" : "") + " " + field.Extra + ",";
+                cmd += "`" + field.Name + "` " + field.Type + " " + (!field.AllowNull ? "NOT NULL" : "") +
+                    " DEFAULT " + (string.IsNullOrEmpty(field.Default) ? "NULL" : field.Default) + " " + field.Extra + ",";
             }
 
             foreach (Field field in table.Fields)
