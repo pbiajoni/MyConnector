@@ -5,10 +5,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Pablo Biajoni</Authors>
     <Company>Pablo BiajoniPablo Biajoni</Company>
-    <PackageLicenseFile>lictext.txt</PackageLicenseFile>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageTags>MySQL</PackageTags>
     <Description>It's a simple crud connector for mysql</Description>
-    <Version>1.0.18</Version>
+    <Version>1.0.20</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\Desktop\lictext.txt">
+    <None Include="..\license.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

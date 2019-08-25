@@ -132,7 +132,6 @@ namespace MyConnector.Examples
                 Table.AddIntField("country_id");
                 Table.AddVarCharField("name", 50);
 
-                Table.Indexes.Add(new Index() { KeyName = "fk_state_country", ColumnName = "country_id" });
                 Table.References.Add(new References("countries", "id", "country_id", "fk_state_country"));
                 database.Tables.Add(Table);
 

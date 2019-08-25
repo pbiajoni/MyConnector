@@ -39,6 +39,11 @@ namespace MyConnector.Mapping
             Table table = new Table(tableName);
             Table mappedTable = Tables.Find(x => x.Name == tableName);
 
+            if(mappedTable == null)
+            {
+                throw new Exception(tableName + " is not mapped");
+            }
+
             if (MyCon.HasRows("show tables like '" + tableName + "';"))
             {
                 string cmd = "describe " + tableName + ";";
@@ -57,6 +62,7 @@ namespace MyConnector.Mapping
                     });
                 }
 
+                Console.WriteLine("Comparing tables");
                 string updateTable = mappedTable.UpdateTable(mappedTable, table);
 
                 if (!string.IsNullOrEmpty(updateTable))
