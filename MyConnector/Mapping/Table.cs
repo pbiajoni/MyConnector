@@ -50,6 +50,80 @@ namespace MyConnector.Mapping
             Collate = "utf8_unicode_ci";
         }
 
+        public string UpdateTable(Table mappedTable, Table databaseTable)
+        {
+            string cmd = "";
+
+            foreach (Field field in mappedTable.Fields)
+            {
+                if (databaseTable.Fields.Any(x => x.Name == field.Name))
+                {
+                    Field dbField = databaseTable.Fields.Find(x => x.Name == field.Name);
+                    FieldAction fieldAction = field.Compare(dbField);
+
+                    if (fieldAction.Action == ActionType.Update)
+                    {
+                        cmd += "ALTER TABLE `" + mappedTable.Name + "` CHANGE COLUMN `" + field.Name + "` `" + field.Name + "` " + field.Type + " ";
+
+                        if (!field.AllowNull)
+                        {
+                            if (!string.IsNullOrEmpty(field.Extra) && field.Extra.ToUpper() == "AUTO_INCREMENT")
+                            {
+                                cmd += "NOT NULL " + field.Extra + " ";
+                            }
+                            else
+                            {
+                                if (string.IsNullOrEmpty(field.Default))
+                                {
+                                    throw ExceptionManager.Exception("The default value must contain a value when not null.", null, field.Name);
+                                }
+
+                                cmd += "NOT NULL DEFAULT " + field.Default + " ";
+                            }
+                        }
+                        else
+                        {
+                            cmd += string.IsNullOrEmpty(field.Default) ? "NULL " : "NULL DEFAULT " + field.Default + " ";
+                        }
+
+                        cmd += !string.IsNullOrEmpty(field.After) ? " AFTER " + field.After : "";
+
+                        cmd += ";";
+                    }
+                }
+                else
+                {
+                    cmd += "ALTER TABLE `" + mappedTable.Name + "` ADD COLUMN `" + field.Name + "` " + field.Type.ToUpper() + " ";
+
+                    if (!field.AllowNull)
+                    {
+                        if (!string.IsNullOrEmpty(field.Extra) && field.Extra.ToUpper() == "AUTO_INCREMENT")
+                        {
+                            cmd += "NOT NULL " + field.Extra + " ";
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(field.Default))
+                            {
+                                throw ExceptionManager.Exception("The default value must contain a value when not null.", null, field.Name);
+                            }
+
+                            cmd += "NOT NULL DEFAULT " + field.Default + " ";
+                        }
+                    }
+                    else
+                    {
+                        cmd += string.IsNullOrEmpty(field.Default) ? "NULL " : "NULL DEFAULT " + field.Default + " ";
+                    }
+
+                    cmd += !string.IsNullOrEmpty(field.After) ? " AFTER " + field.After : "";
+                    cmd += ";";
+                }
+            }
+
+            return cmd;
+        }
+
         public string GetCreateTable(Table table)
         {
             string cmd = "CREATE TABLE `" + table.Name + "` (";
@@ -68,7 +142,10 @@ namespace MyConnector.Mapping
                     {
                         if (string.IsNullOrEmpty(field.Default))
                         {
-                            throw ExceptionManager.Exception("The default value must contain a value when not null.", table.Name, field.Name);
+                            if (field.Type.Contains("varchar"))
+                            {
+                                field.Default = "''";
+                            }
                         }
 
                         cmd += "NOT NULL DEFAULT " + field.Default + ",";

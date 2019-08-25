@@ -28,21 +28,47 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.txtlog = new System.Windows.Forms.TextBox();
+            this.btnRun = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // txtlog
+            // 
+            this.txtlog.Location = new System.Drawing.Point(25, 30);
+            this.txtlog.Multiline = true;
+            this.txtlog.Name = "txtlog";
+            this.txtlog.Size = new System.Drawing.Size(885, 485);
+            this.txtlog.TabIndex = 0;
+            // 
+            // btnRun
+            // 
+            this.btnRun.Location = new System.Drawing.Point(835, 528);
+            this.btnRun.Name = "btnRun";
+            this.btnRun.Size = new System.Drawing.Size(75, 23);
+            this.btnRun.TabIndex = 1;
+            this.btnRun.Text = "Run";
+            this.btnRun.UseVisualStyleBackColor = true;
+            this.btnRun.Click += new System.EventHandler(this.BtnRun_Click);
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(946, 550);
+            this.ClientSize = new System.Drawing.Size(946, 563);
+            this.Controls.Add(this.btnRun);
+            this.Controls.Add(this.txtlog);
             this.Name = "frmMain";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.FrmMain_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.TextBox txtlog;
+        private System.Windows.Forms.Button btnRun;
     }
 }
 

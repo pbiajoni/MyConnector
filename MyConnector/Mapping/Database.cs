@@ -37,6 +37,7 @@ namespace MyConnector.Mapping
         public void ValidateTable(string tableName)
         {
             Table table = new Table(tableName);
+            Table mappedTable = Tables.Find(x => x.Name == tableName);
 
             if (MyCon.HasRows("show tables like '" + tableName + "';"))
             {
@@ -55,14 +56,18 @@ namespace MyConnector.Mapping
                         Extra = dt.Rows[i]["Extra"].ToString()
                     });
                 }
+
+                string updateTable = mappedTable.UpdateTable(mappedTable, table);
+
+                if (!string.IsNullOrEmpty(updateTable))
+                {
+                    MyCon.ExecuteTransaction(updateTable);
+                }
             }
             else
             {
-                Table mappedTable = Tables.Find(x => x.Name == tableName);
                 MyCon.ExecuteTransaction(mappedTable.GetCreateTable());
             }
-
-
         }
     }
 }
