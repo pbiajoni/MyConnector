@@ -31,21 +31,31 @@ namespace MyConnector.Mapping
         public void ValidateTable(string tableName)
         {
             Table table = new Table(tableName);
-            string cmd = "describe " + tableName + ";";
-            DataTable dt = MyCon.Select(cmd);
 
-            for (int i = 0; i < dt.Rows.Count; i++)
+            if (MyCon.HasRows("show tables like '" + tableName + "';"))
             {
-                table.Fields.Add(new Field()
+                string cmd = "describe " + tableName + ";";
+                DataTable dt = MyCon.Select(cmd);
+
+                for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    Name = dt.Rows[i]["Field"].ToString(),
-                    Type = dt.Rows[i]["Type"].ToString(),
-                    AllowNull = dt.Rows[i]["Null"].ToString() == "YES" ? true : false,
-                    Key = dt.Rows[i]["Key"].ToString(),
-                    Default = dt.Rows[i]["Default"].ToString(),
-                    Extra = dt.Rows[i]["Extra"].ToString()
-                });
+                    table.Fields.Add(new Field()
+                    {
+                        Name = dt.Rows[i]["Field"].ToString(),
+                        Type = dt.Rows[i]["Type"].ToString(),
+                        AllowNull = dt.Rows[i]["Null"].ToString() == "YES" ? true : false,
+                        Key = dt.Rows[i]["Key"].ToString(),
+                        Default = dt.Rows[i]["Default"].ToString(),
+                        Extra = dt.Rows[i]["Extra"].ToString()
+                    });
+                }
             }
+            else
+            {
+                Table mappedTable = Tables.Find(x => x.Name == tableName);
+            }
+
+
         }
     }
 }
