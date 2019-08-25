@@ -53,6 +53,7 @@ namespace MyConnector.Mapping
             else
             {
                 Table mappedTable = Tables.Find(x => x.Name == tableName);
+                MyCon.ExecuteTransaction(mappedTable.GetCreateTable());
             }
 
 

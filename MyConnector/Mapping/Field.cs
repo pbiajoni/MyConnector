@@ -11,8 +11,7 @@ namespace MyConnector.Mapping
         public bool AllowNull { get; set; }
         public string Key { get; set; }
         public string Default { get; set; }
-        public string Extra { get; set; }
-
+        public string Extra { get; set; }        
         public Field()
         {
 

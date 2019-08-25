@@ -12,21 +12,35 @@ namespace MyConnector.Mapping
         public string DefaultCharset { get; set; }
         public string Collate { get; set; }
         public List<Field> Fields { get; set; }
+        public List<References> References { get; set; }
+        public List<Index> Indexes { get; set; }
+
         public Table()
         {
-            if (Fields is null)
-            {
-                Fields = new List<Field>();
-            }
+            GrantLists();
         }
 
         public Table(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            GrantLists();
+        }
+
+        public void GrantLists()
+        {
+            if (Indexes is null)
+            {
+                Indexes = new List<Index>();
+            }
 
             if (Fields is null)
             {
                 Fields = new List<Field>();
+            }
+
+            if (References is null)
+            {
+                References = new List<References>();
             }
         }
 
@@ -45,6 +59,17 @@ namespace MyConnector.Mapping
                 {
                     cmd += "PRIMARY KEY (`" + field.Name + "`),";
                 }
+            }
+
+            foreach (Index index in table.Indexes)
+            {
+                cmd += (index.Unique ? "UNIQUE " : "") + "KEY `" + index.KeyName + "` (`" + index.ColumnName + "`), ";
+            }
+
+            foreach (References reference in table.References)
+            {
+                cmd += "CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
+                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`),";
             }
 
             cmd = cmd.TrimEnd(',') + ") ";
