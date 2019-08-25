@@ -11,17 +11,23 @@ namespace MyConnector.Mapping
         public string Name { get; set; }
         public List<Table> Tables { get; set; }
 
+        public Database(string name, MyCon myCon) : this(name)
+        {
+            MyCon = myCon ?? throw new ArgumentNullException(nameof(myCon));
+        }
+
         public Database()
         {
-            if (Tables is null)
-            {
-                Tables = new List<Table>();
-            }
+            GrantLists();
         }
         public Database(string name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            GrantLists();
+        }
 
+        void GrantLists()
+        {
             if (Tables is null)
             {
                 Tables = new List<Table>();
