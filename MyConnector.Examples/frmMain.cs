@@ -65,50 +65,50 @@ namespace MyConnector.Examples
                 Table Table = new Table("users");
                 Table.Engine = "InnoDB";
 
-                //Table.Fields.Add(new Field()
-                //{
-                //    Name = "id",
-                //    AllowNull = false,
-                //    Type = "int(11)",
-                //    Key = "PRI",
-                //    Extra = "auto_increment"
-                //});
+                Table.Fields.Add(new Field()
+                {
+                    Name = "id",
+                    AllowNull = false,
+                    Type = "int(11)",
+                    Key = "PRI",
+                    Extra = "auto_increment"
+                });
 
-                //Table.Fields.Add(new Field()
-                //{
-                //    Name = "username",
-                //    Type = "varchar(20)",
-                //    AllowNull = false,
-                //});
+                Table.Fields.Add(new Field()
+                {
+                    Name = "username",
+                    Type = "varchar(20)",
+                    AllowNull = false,
+                });
 
-                //Table.Fields.Add(new Field()
-                //{
-                //    Name = "password",
-                //    Type = "varchar(50)",
-                //    AllowNull = false,
-                //});
+                Table.Fields.Add(new Field()
+                {
+                    Name = "password",
+                    Type = "varchar(50)",
+                    AllowNull = false,
+                });
 
-                //Table.Fields.Add(new Field()
-                //{
-                //    Name = "fullname",
-                //    Type = "varchar(100)",
-                //    AllowNull = true
-                //});
+                Table.Fields.Add(new Field()
+                {
+                    Name = "fullname",
+                    Type = "varchar(100)",
+                    AllowNull = true
+                });
 
-                //Table.Fields.Add(new Field()
-                //{
-                //    Name = "email",
-                //    Type = "varchar(100)",
-                //    AllowNull = true
-                //});
+                Table.Fields.Add(new Field()
+                {
+                    Name = "email",
+                    Type = "varchar(100)",
+                    AllowNull = true
+                });
 
-                //Table.Fields.Add(new Field()
-                //{
-                //    Name = "status",
-                //    Type = "int(1)",
-                //    AllowNull = false,
-                //    Default = "0"
-                //});
+                Table.Fields.Add(new Field()
+                {
+                    Name = "status",
+                    Type = "int(1)",
+                    AllowNull = false,
+                    Default = "0"
+                });
 
                 Table.AddVarCharField("teste_campo", 54);
                 Table.AddVarCharField("teste_campo2", 52);
@@ -144,8 +144,8 @@ namespace MyConnector.Examples
                 Table.References.Add(new References("states", "id", "state_id", "fk_city_state"));
                 database.Tables.Add(Table);
 
-                //database.ValidateTable("users");
-                //database.ValidateTable("countries");
+                database.ValidateTable("users");
+                database.ValidateTable("countries");
                 database.ValidateTable("states");
                 database.ValidateTable("cities");
 

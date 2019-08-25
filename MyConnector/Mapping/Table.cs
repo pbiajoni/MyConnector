@@ -231,7 +231,7 @@ namespace MyConnector.Mapping
                 Name = name,
                 AllowNull = true,
                 Type = "INT(" + size.ToString() + ")",
-                Default = (defaultValue > -1 ? defaultValue.ToString() : null),
+                Default = (defaultValue > -1 ? defaultValue.ToString() : ""),
                 After = after
             });
         }
