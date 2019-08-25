@@ -8,7 +8,7 @@
     <PackageLicenseFile>lictext.txt</PackageLicenseFile>
     <PackageTags>MySQL</PackageTags>
     <Description>It's a simple crud connector for mysql</Description>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup>

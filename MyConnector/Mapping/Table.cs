@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace MyConnector.Mapping
 {
@@ -83,6 +84,23 @@ namespace MyConnector.Mapping
         public string GetCreateTable()
         {
             return GetCreateTable(this);
+        }
+
+        public void AddVarCharField(string name, int size, string defaultValue = "", string after = "")
+        {
+            if (Fields.Any(x => x.Name == name))
+            {
+                throw new Exception("the field name " + name + " already exists");
+            }
+
+            Fields.Add(new Field()
+            {
+                Name = name,
+                AllowNull = true,
+                Default = defaultValue,
+                Type = "VARCHAR(" + size.ToString() + ")",
+                After = after
+            });
         }
     }
 }

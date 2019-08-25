@@ -11,7 +11,8 @@ namespace MyConnector.Mapping
         public bool AllowNull { get; set; }
         public string Key { get; set; }
         public string Default { get; set; }
-        public string Extra { get; set; }        
+        public string Extra { get; set; }
+        public string After { get; set; }
         public Field()
         {
 
@@ -57,6 +58,12 @@ namespace MyConnector.Mapping
             if (field.Default.Trim() != Default.Trim())
             {
                 fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Default", Action = ActionType.Update, Value = field.Default });
+                fieldAction.Action = ActionType.Update;
+            }
+
+            if(field.After.Trim() != After.Trim())
+            {
+                fieldAction.PropertyActions.Add(new PropertyAction() { Name = "After", Action = ActionType.Update, Value = field.Default });
                 fieldAction.Action = ActionType.Update;
             }
 
