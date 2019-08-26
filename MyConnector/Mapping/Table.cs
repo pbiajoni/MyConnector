@@ -178,14 +178,15 @@ namespace MyConnector.Mapping
 
                 if (reference.OnDeleteAction != OnDelete.Restrict)
                 {
-                    cmd += " ON DELETE " + Utils.GetEnumDescription(reference.OnDeleteAction) + ",";
+                    cmd += " ON DELETE " + Utils.GetEnumDescription(reference.OnDeleteAction);
                 }
 
                 if (reference.OnUpdateAction != OnUpdate.Restrict)
                 {
-                    cmd = cmd.TrimEnd(',');
-                    cmd += " ON UPDATE " + Utils.GetEnumDescription(reference.OnUpdateAction) + ",";
+                    cmd += " ON UPDATE " + Utils.GetEnumDescription(reference.OnUpdateAction);
                 }
+
+                cmd += ",";
             }
 
             cmd = cmd.TrimEnd(',') + ") ";
