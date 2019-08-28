@@ -7,6 +7,8 @@ namespace MyConnector.Mapping
 {
     public class Database
     {
+        public delegate void ValidateTableEventHandler(Table table);
+        public event ValidateTableEventHandler OnValidateTable;
         public MyCon MyCon { get; set; }
         public string Name { get; set; }
         public List<Table> Tables { get; set; }
@@ -34,12 +36,20 @@ namespace MyConnector.Mapping
             }
         }
 
+        public void ValidateAllTables()
+        {
+            foreach (Table table in Tables)
+            {
+                if (OnValidateTable != null) { OnValidateTable(table); }
+                ValidateTable(table.Name);
+            }
+        }
         public void ValidateTable(string tableName)
         {
             Table table = new Table(tableName);
             Table mappedTable = Tables.Find(x => x.Name == tableName);
 
-            if(mappedTable == null)
+            if (mappedTable == null)
             {
                 throw new Exception(tableName + " is not mapped");
             }
