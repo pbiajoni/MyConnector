@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -36,6 +37,10 @@ namespace MyConnector.Mapping
             }
         }
 
+        public Table GetTable(string tableName)
+        {
+            return Tables.Single(x => x.Name == tableName);
+        }
         public void ValidateAllTables()
         {
             foreach (Table table in Tables)
@@ -84,7 +89,7 @@ namespace MyConnector.Mapping
             {
                 MyCon.ExecuteTransaction(mappedTable.GetCreateTable());
 
-                foreach(string cmd in mappedTable.PrePopulateCommands)
+                foreach (string cmd in mappedTable.PrePopulateCommands)
                 {
                     MyCon.ExecuteTransaction(cmd);
                 }

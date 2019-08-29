@@ -46,7 +46,7 @@ namespace MyConnector.Mapping
                 References = new List<References>();
             }
 
-            if(PrePopulateCommands == null)
+            if (PrePopulateCommands == null)
             {
                 PrePopulateCommands = new List<string>();
             }
@@ -54,6 +54,11 @@ namespace MyConnector.Mapping
             Engine = "InnoDB";
             DefaultCharset = "utf8";
             Collate = "utf8_unicode_ci";
+        }
+
+        public int GetFieldLength(string fieldName)
+        {
+            return Convert.ToInt32(Utils.Between(Fields.Single(x => x.Name == fieldName).Type, "(", ")"));
         }
 
         public string UpdateTable(Table mappedTable, Table databaseTable)
