@@ -7,6 +7,7 @@ namespace MyConnector.Mapping
 {
     public class Table
     {
+        public List<string> PrePopulateCommands { get; set; }
         public int CreateIndex { get; set; }
         public string Name { get; set; }
         public string Engine { get; set; }
@@ -43,6 +44,11 @@ namespace MyConnector.Mapping
             if (References is null)
             {
                 References = new List<References>();
+            }
+
+            if(PrePopulateCommands == null)
+            {
+                PrePopulateCommands = new List<string>();
             }
 
             Engine = "InnoDB";

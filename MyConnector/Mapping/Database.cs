@@ -83,6 +83,11 @@ namespace MyConnector.Mapping
             else
             {
                 MyCon.ExecuteTransaction(mappedTable.GetCreateTable());
+
+                foreach(string cmd in mappedTable.PrePopulateCommands)
+                {
+                    MyCon.ExecuteTransaction(cmd);
+                }
             }
         }
     }
