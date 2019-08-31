@@ -29,5 +29,21 @@ namespace MyConnector.Mapping
             OnDeleteAction = OnDelete.Restrict;
             OnUpdateAction = OnUpdate.Restrict;
         }
+
+        public References(string foreignTableName, string fieldName, string keyName)
+        {
+            ForeignTableName = foreignTableName ?? throw new ArgumentNullException(nameof(foreignTableName));
+            FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
+            KeyName = keyName ?? throw new ArgumentNullException(nameof(keyName));
+            ForeignFieldName = "id";
+        }
+
+        public References(string foreignTableName, string fieldName, string keyName, 
+            OnDelete onDeleteAction, OnUpdate onUpdateAction) : this(foreignTableName, fieldName, keyName)
+        {
+            OnDeleteAction = onDeleteAction;
+            OnUpdateAction = onUpdateAction;
+            ForeignFieldName = "id";
+        }
     }
 }

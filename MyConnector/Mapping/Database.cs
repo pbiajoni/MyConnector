@@ -91,7 +91,7 @@ namespace MyConnector.Mapping
 
                 foreach (string cmd in mappedTable.PrePopulateCommands)
                 {
-                    MyCon.ExecuteTransaction(cmd);
+                    MyCon.ExecuteTransaction(cmd.Replace("@tablename", mappedTable.Name));
                 }
             }
         }
