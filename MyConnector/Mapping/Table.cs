@@ -61,6 +61,14 @@ namespace MyConnector.Mapping
             return Convert.ToInt32(Utils.Between(Fields.Single(x => x.Name == fieldName).Type, "(", ")"));
         }
 
+        public string GetReferencesFromServer()
+        {
+            string cmd = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, " +
+            "REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE " +
+            "Table_name = '" + this.Name + "' AND CONSTRAINT_NAME <> 'PRIMARY';";
+            return cmd;
+        }
+
         public string UpdateTable(Table mappedTable, Table databaseTable)
         {
             string cmd = "";

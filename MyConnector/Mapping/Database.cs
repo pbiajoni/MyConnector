@@ -49,6 +49,28 @@ namespace MyConnector.Mapping
                 ValidateTable(table.Name);
             }
         }
+
+        public List<References> GetReferencesFromServer(Table table)
+        {
+            string cmd = table.GetReferencesFromServer();
+            DataTable dt = MyCon.Select(cmd);
+
+            List<References> references = new List<References>();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                string column_name = dt.Rows[i]["COLUMN_NAME"].ToString();
+                string constraint_name = dt.Rows[i]["CONSTRAINT_NAME"].ToString();
+                string referenced_table_name = dt.Rows[i]["REFERENCED_TABLE_NAME"].ToString();
+                string referenced_column_name = dt.Rows[i]["REFERENCED_COLUMN_NAME"].ToString();
+
+                references.Add(new References(referenced_table_name, 
+                    referenced_column_name, column_name, constraint_name));
+            }
+
+            return references;
+        }
+
         public void ValidateTable(string tableName)
         {
             Table table = new Table(tableName);
