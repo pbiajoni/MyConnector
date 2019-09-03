@@ -52,6 +52,7 @@ namespace MyConnector.Mapping
 
         public List<References> GetReferencesFromServer(Table table)
         {
+            Console.WriteLine("getting references from server of table " + table.Name);
             string cmd = table.GetReferencesFromServer();
             DataTable dt = MyCon.Select(cmd);
 
@@ -101,11 +102,17 @@ namespace MyConnector.Mapping
 
                 Console.WriteLine("Comparing tables");
                 string updateTable = mappedTable.UpdateTable(mappedTable, table);
+                //string updateReferences = mappedTable.UpdateReferences(GetReferencesFromServer(table));
 
                 if (!string.IsNullOrEmpty(updateTable))
                 {
                     MyCon.ExecuteTransaction(updateTable);
                 }
+
+                //if (!string.IsNullOrEmpty(updateReferences))
+                //{
+                //    MyCon.ExecuteTransaction(updateReferences);
+                //}
             }
             else
             {

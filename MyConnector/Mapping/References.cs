@@ -45,5 +45,42 @@ namespace MyConnector.Mapping
             OnUpdateAction = onUpdateAction;
             ForeignFieldName = "id";
         }
+
+        public override bool Equals(object obj)
+        {
+            References cref = (References)obj;
+
+            if(cref.FieldName != FieldName)
+            {
+                return true;
+            }
+
+            if(cref.ForeignFieldName != ForeignFieldName)
+            {
+                return true;
+            }
+
+            if(cref.ForeignTableName != ForeignTableName)
+            {
+                return true;
+            }
+
+            if(cref.KeyName != KeyName)
+            {
+                return true;
+            }
+
+            if(cref.OnDeleteAction != OnDeleteAction)
+            {
+                return true;
+            }
+
+            if(cref.OnUpdateAction != OnUpdateAction)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

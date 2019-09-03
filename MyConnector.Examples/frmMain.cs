@@ -14,7 +14,7 @@ namespace MyConnector.Examples
 {
     public partial class frmMain : Form
     {
-        MyCon myCon = new MyCon("SERVER=localhost;PORT=3306;UID=proton;PASSWORD=wMZ3gE6L;DATABASE=proton;");
+        MyCon myCon = new MyCon("SERVER=localhost;PORT=3306;UID=mycon;PASSWORD=1234;DATABASE=myconnector;");
         public frmMain()
         {
             InitializeComponent();
@@ -130,9 +130,10 @@ namespace MyConnector.Examples
                 Table = new Table("states");
                 Table.AddIdField();
                 Table.AddIntField("country_id");
+                Table.AddIntField("user_id");
                 Table.AddVarCharField("name", 50);
 
-                Table.References.Add(new References("countries", "id", "country_id", "fk_state_country"));
+                Table.References.Add(new References("countries", "id", "user_id", "fk_state_country"));
                 database.Tables.Add(Table);
 
                 Table = new Table("cities");

@@ -61,11 +61,75 @@ namespace MyConnector.Mapping
             return Convert.ToInt32(Utils.Between(Fields.Single(x => x.Name == fieldName).Type, "(", ")"));
         }
 
+        bool ReferenceExistsInMap(string keyName)
+        {
+            return References.Any(x => x.KeyName == keyName);
+        }
+
+        bool ReferencesExistsInDB(string keyName, List<References> dbReferences)
+        {
+            return dbReferences.Any(x => x.KeyName == keyName);
+        }
+        public string UpdateReferences(List<References> dbReferences)
+        {
+            string cmd = "";
+
+            foreach (References dbref in dbReferences)
+            {
+                if (!ReferenceExistsInMap(dbref.KeyName))
+                {
+                    cmd += "ALTER TABLE " + Name + " DROP FOREIGN KEY `" + dbref.KeyName + "`, DROP INDEX `" + dbref.KeyName + "`;" + Environment.NewLine;
+                }
+            }
+
+            foreach (References reference in References)
+            {
+                if (!ReferencesExistsInDB(reference.KeyName, dbReferences))
+                {
+                    cmd += "ALTER TABLE `" + Name + "` ADD CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
+                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`)";
+
+                    if (reference.OnDeleteAction != OnDelete.Restrict)
+                    {
+                        cmd += " ON DELETE " + Utils.GetEnumDescription(reference.OnDeleteAction);
+                    }
+
+                    if (reference.OnUpdateAction != OnUpdate.Restrict)
+                    {
+                        cmd += " ON UPDATE " + Utils.GetEnumDescription(reference.OnUpdateAction);
+                    }
+                }
+                else
+                {
+                    if(!reference.Equals(dbReferences.SingleOrDefault(x=>x.FieldName == reference.KeyName)))
+                    {
+                        cmd += "ALTER TABLE " + Name + " DROP FOREIGN KEY `" + reference.KeyName + "`, DROP INDEX `" + reference.KeyName + "`;" + Environment.NewLine;
+                        cmd += "ALTER TABLE `" + Name + "` ADD CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
+                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`)";
+
+                        if (reference.OnDeleteAction != OnDelete.Restrict)
+                        {
+                            cmd += " ON DELETE " + Utils.GetEnumDescription(reference.OnDeleteAction);
+                        }
+
+                        if (reference.OnUpdateAction != OnUpdate.Restrict)
+                        {
+                            cmd += " ON UPDATE " + Utils.GetEnumDescription(reference.OnUpdateAction);
+                        }
+                    }
+                }
+            }
+
+            return cmd;
+        }
+
+
         public string GetReferencesFromServer()
         {
             string cmd = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, " +
             "REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE " +
             "Table_name = '" + this.Name + "' AND CONSTRAINT_NAME <> 'PRIMARY';";
+
             return cmd;
         }
 
