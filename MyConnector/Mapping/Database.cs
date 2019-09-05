@@ -84,7 +84,7 @@ namespace MyConnector.Mapping
 
             if (MyCon.HasRows("show tables like '" + tableName + "';"))
             {
-                string cmd = "describe " + tableName + ";";
+                string cmd = "describe `" + tableName + "`;";
                 DataTable dt = MyCon.Select(cmd);
 
                 for (int i = 0; i < dt.Rows.Count; i++)
