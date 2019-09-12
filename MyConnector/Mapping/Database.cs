@@ -65,7 +65,7 @@ namespace MyConnector.Mapping
                 string referenced_table_name = dt.Rows[i]["REFERENCED_TABLE_NAME"].ToString();
                 string referenced_column_name = dt.Rows[i]["REFERENCED_COLUMN_NAME"].ToString();
 
-                references.Add(new References(referenced_table_name, 
+                references.Add(new References(referenced_table_name,
                     referenced_column_name, column_name, constraint_name));
             }
 
@@ -95,7 +95,7 @@ namespace MyConnector.Mapping
                         Type = dt.Rows[i]["Type"].ToString(),
                         AllowNull = dt.Rows[i]["Null"].ToString() == "YES" ? true : false,
                         Key = dt.Rows[i]["Key"].ToString(),
-                        Default = dt.Rows[i]["Default"].ToString(),
+                        Default =  dt.Rows[i]["Default"].ToString(),
                         Extra = dt.Rows[i]["Extra"].ToString()
                     });
                 }
