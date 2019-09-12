@@ -311,6 +311,7 @@ namespace MyConnector
                 this.RollBack();
                 string errorMessage = GetErrorMessage(mException.Number);
                 Exception exception = null;
+                string command = "Fail Command -> " + cmdSQL;
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
@@ -321,6 +322,7 @@ namespace MyConnector
                     exception = new Exception(mException.Message, mException);
                 }
 
+                Console.WriteLine(command);
                 Console.WriteLine(exception.ToString());
                 throw exception;
             }
