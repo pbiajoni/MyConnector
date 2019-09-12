@@ -42,21 +42,21 @@ namespace MyConnector.Mapping
             {
                 fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Name", Action = ActionType.Update, Value = field.Name });
                 fieldAction.Action = ActionType.Update;
-                Console.WriteLine(field.Name + " was changed - param Name");
+                Console.WriteLine(field.Name + " was changed - param Name - " + field.Name + " to " + Name);
             }
 
             if (field.Type.Trim().ToUpper() != Type.Trim().ToUpper())
             {
                 fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Type", Action = ActionType.Update, Value = field.Type });
                 fieldAction.Action = ActionType.Update;
-                Console.WriteLine(field.Name + " was changed - param Type");
+                Console.WriteLine(field.Name + " was changed - param Type- " + field.Type + " to " + Type);
             }
 
             if (field.AllowNull != AllowNull)
             {
                 fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Null", Action = ActionType.Update, Value = field.AllowNull });
                 fieldAction.Action = ActionType.Update;
-                Console.WriteLine(field.Name + " was changed - param AllowNull");
+                Console.WriteLine(field.Name + " was changed - param AllowNull - " + field.AllowNull.ToString() + " to " + AllowNull.ToString());
             }
 
             //if ((field.Key != "UNI" && !string.IsNullOrEmpty(Key)) && (field.Key.Trim().ToUpper() != Key.Trim().ToUpper()))
@@ -70,14 +70,14 @@ namespace MyConnector.Mapping
             {
                 fieldAction.PropertyActions.Add(new PropertyAction() { Name = "Default", Action = ActionType.Update, Value = field.Default });
                 fieldAction.Action = ActionType.Update;
-                Console.WriteLine(field.Name + " was changed - param Default");
+                Console.WriteLine(field.Name + " was changed - param Default - " + field.Default + " to " + Default);
             }
 
             if (!string.IsNullOrEmpty(field.After) && field.After.Trim() != After.Trim().ToUpper())
             {
                 fieldAction.PropertyActions.Add(new PropertyAction() { Name = "After", Action = ActionType.Update, Value = field.Default });
                 fieldAction.Action = ActionType.Update;
-                Console.WriteLine(field.Name + " was changed - param After");
+                Console.WriteLine(field.Name + " was changed - param After - " + field.After + " to " + After);
             }
 
             return fieldAction;
