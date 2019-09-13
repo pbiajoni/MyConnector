@@ -37,7 +37,7 @@ namespace MyConnector.Examples
 
         private void MyCon_OnOpenConnection()
         {
-            txtlog.AppendText("open connection"+ Environment.NewLine);
+            txtlog.AppendText("open connection" + Environment.NewLine);
         }
 
         private void MyCon_OnCommited()
@@ -52,8 +52,8 @@ namespace MyConnector.Examples
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            
-            
+
+
         }
 
         private void BtnRun_Click(object sender, EventArgs e)
@@ -62,92 +62,19 @@ namespace MyConnector.Examples
             {
                 Database database = new Database(myCon.Database, myCon);
 
-                Table Table = new Table("users");
-                Table.Engine = "InnoDB";
-
+                Table Table = new Table("tmycon");
+                Table.AddVarCharField("test", 10);
                 Table.Fields.Add(new Field()
                 {
-                    Name = "id",
-                    AllowNull = false,
-                    Type = "int(11)",
-                    Key = "PRI",
-                    Extra = "auto_increment"
-                });
-
-                Table.Fields.Add(new Field()
-                {
-                    Name = "username",
-                    Type = "varchar(20)",
-                    AllowNull = false,
-                });
-
-                Table.Fields.Add(new Field()
-                {
-                    Name = "password",
-                    Type = "varchar(50)",
-                    AllowNull = false,
-                });
-
-                Table.Fields.Add(new Field()
-                {
-                    Name = "fullname",
-                    Type = "varchar(100)",
+                    Name = "date_and_time",
+                    Default = "",
+                    Type = "datetime",
                     AllowNull = true
                 });
 
-                Table.Fields.Add(new Field()
-                {
-                    Name = "email",
-                    Type = "varchar(100)",
-                    AllowNull = true
-                });
-
-                Table.Fields.Add(new Field()
-                {
-                    Name = "status",
-                    Type = "int(1)",
-                    AllowNull = false,
-                    Default = "0"
-                });
-
-                Table.AddVarCharField("teste_campo", 54);
-                Table.AddVarCharField("teste_campo2", 52);
-
-                Table.Indexes.Add(new Index()
-                {
-                    Unique = true,
-                    KeyName = "unique_username",
-                    ColumnName = "username"
-                });
-
                 database.Tables.Add(Table);
 
-                Table = new Table("countries");
-                Table.AddIdField();
-                Table.AddVarCharField("name", 50);
-                database.Tables.Add(Table);
-
-                Table = new Table("states");
-                Table.AddIdField();
-                Table.AddIntField("country_id");
-                Table.AddIntField("user_id");
-                Table.AddVarCharField("name", 50);
-
-                Table.References.Add(new References("countries", "id", "user_id", "fk_state_country"));
-                database.Tables.Add(Table);
-
-                Table = new Table("cities");
-                Table.AddIdField();
-                Table.AddIntField("state_id");
-                Table.AddVarCharField("name", 100);
-
-                Table.References.Add(new References("states", "id", "state_id", "fk_city_state"));
-                database.Tables.Add(Table);
-
-                database.ValidateTable("users");
-                database.ValidateTable("countries");
-                database.ValidateTable("states");
-                database.ValidateTable("cities");
+                database.ValidateAllTables();
 
                 myCon.Commit();
             }

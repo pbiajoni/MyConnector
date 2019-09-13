@@ -43,6 +43,12 @@ namespace MyConnector.Mapping
         }
         public void ValidateAllTables()
         {
+            if(Tables.Count == 0)
+            {
+                throw new Exception("There are no tables to validate");
+            }
+
+
             foreach (Table table in Tables)
             {
                 if (OnValidateTable != null) { OnValidateTable(table); }
