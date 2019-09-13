@@ -324,6 +324,19 @@ namespace MyConnector.Mapping
         {
             AddIntField(name, 11, true, -1, "");
         }
+
+        public void AddDateTimeField(string name)
+        {
+            FieldExists(name);
+
+            Fields.Add(new Field()
+            {
+                Name = name,
+                AllowNull = true,
+                Default = "",
+                Type = "DATETIME"
+            });
+        }
         public void AddVarCharField(string name, int size, string defaultValue = "", string after = "")
         {
             FieldExists(name);
