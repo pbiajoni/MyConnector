@@ -9,6 +9,7 @@ namespace MyConnector
         public string FieldName { get; set; }
         public object Value { get; set; }
         public bool AddSlash { get; set; }
+        public bool RemoveSingleQuotes { get; set; }
 
         public QueryBuilderItem()
         {
@@ -20,5 +21,6 @@ namespace MyConnector
             Value = value ?? throw new ArgumentNullException(nameof(value));
             AddSlash = addSlash;
         }
+
     }
 }

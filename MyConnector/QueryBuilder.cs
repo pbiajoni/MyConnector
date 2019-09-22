@@ -34,9 +34,41 @@ namespace MyConnector
             }
         }
 
-        public string Update(object id)
+        public string Update(object id, string identifier = "id")
         {
-            throw new NotImplementedException();
+            string cmd = "UPDATE `" + TableMap.Name + "` SET ";
+
+
+            foreach (QueryBuilderItem item in Items)
+            {
+                if (item.RemoveSingleQuotes)
+                {
+                    if (item.AddSlash)
+                    {
+                        cmd += item.FieldName.Trim() + " = " + Utils.AddSlash(item.Value.ToString().Trim()) + ",";
+                    }
+                    else
+                    {
+                        cmd += item.FieldName.Trim() + " = " + item.Value.ToString().Trim() + ",";
+                    }
+                }
+                else
+                {
+                    if (item.AddSlash)
+                    {
+                        cmd += item.FieldName.Trim() + " = '" + Utils.AddSlash(item.Value.ToString().Trim()) + "',";
+                    }
+                    else
+                    {
+                        cmd += item.FieldName.Trim() + " = '" + item.Value.ToString().Trim() + "',";
+                    }
+                }
+
+            }
+
+            cmd = cmd.TrimEnd(',');
+            cmd += " WHERE " + identifier.Trim() + " = " + id.ToString().Trim() + ";";
+            return cmd;
         }
         public string Insert()
         {
@@ -48,13 +80,27 @@ namespace MyConnector
             {
                 columns += item.FieldName + ",";
 
-                if (item.AddSlash)
+                if (item.RemoveSingleQuotes)
                 {
-                    values += "'" + item.Value + "',";
+                    if (!item.AddSlash)
+                    {
+                        values += item.Value.ToString().Trim() + ",";
+                    }
+                    else
+                    {
+                        values += Utils.AddSlash(item.Value.ToString()) + ",";
+                    }
                 }
                 else
                 {
-                    values += "'" + Utils.AddSlash(item.Value.ToString()) + "',";
+                    if (!item.AddSlash)
+                    {
+                        values += "'" + item.Value.ToString().Trim() + "',";
+                    }
+                    else
+                    {
+                        values += "'" + Utils.AddSlash(item.Value.ToString()) + "',";
+                    }
                 }
             }
 
