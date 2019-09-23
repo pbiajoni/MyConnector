@@ -313,7 +313,7 @@ namespace MyConnector.Mapping
             Fields.Add(new Field()
             {
                 Name = name,
-                AllowNull = true,
+                AllowNull = allowNull,
                 Type = "INT(" + size.ToString() + ")",
                 Default = (defaultValue > -1 ? defaultValue.ToString() : ""),
                 After = after
