@@ -18,7 +18,7 @@ namespace MyConnector
         public QueryBuilderItem(string fieldName, object value, bool addSlash = false)
         {
             FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
-            Value = value ?? throw new ArgumentNullException(nameof(value));
+            Value = value ?? throw new ArgumentNullException("Parâmetro nome:" + nameof(value)+ " - com campo nome: " + fieldName);
             AddSlash = addSlash;
         }
 
