@@ -98,7 +98,7 @@ namespace MyConnector
         {
 
             string cmd = null;
-            string[] q = cmdSQL.Split(' ');
+            string[] q = cmdSQL.Trim().Split(' ');
 
             if (q[0].ToLower() == "insert")
             {
@@ -140,7 +140,7 @@ namespace MyConnector
             try
             {
                 await Conn.OpenAsync();
-                try { Conn.BeginTransaction(IsolationLevel.ReadUncommitted); }
+                try { await Conn.BeginTransactionAsync(IsolationLevel.ReadUncommitted); }
                 catch (Exception er) { }
                 MySqlCommand c = new MySqlCommand(cmd, Conn);
                 c.CommandTimeout = 600;
@@ -256,6 +256,50 @@ namespace MyConnector
         }
 
 
+        public async Task<bool> OpenConnectionAsync()
+        {
+            try
+            {
+
+                if (MySQLConn.State == ConnectionState.Closed)
+                {
+                    if (string.IsNullOrEmpty(_connectionString))
+                    {
+                        throw new Exception("BiaORM MySQL is not Initialized");
+                    }
+
+                    MySQLConn = new MySqlConnection(_connectionString);
+                    await MySQLConn.OpenAsync();
+
+                    MySQLTran = await MySQLConn.BeginTransactionAsync(IsolationLevel.ReadUncommitted);
+
+                    if (MySQLConn.State == ConnectionState.Open)
+                    {
+                        Console.WriteLine("connection is open");
+                        if (this.OnOpenConnection != null)
+                        {
+                            this.OnOpenConnection();
+                        }
+
+                        return true;
+                    }
+                    else if (MySQLConn.State == ConnectionState.Closed)
+                    {
+                        return false;
+                    }
+
+                    return false;
+                }
+
+                return true;
+            }
+            catch (MySqlException es)
+            {
+                throw es;
+            }
+
+        }
+
         public bool OpenConnection()
         {
             try
@@ -311,6 +355,56 @@ namespace MyConnector
             return CustomErrors.Find(x => x.Code == errorCode).Message;
         }
 
+        public async void ExecuteTransactionAsync(string cmdSQL)
+        {
+            try
+            {
+                await OpenConnectionAsync();
+                Console.WriteLine(cmdSQL);
+
+                if (this.OnExecuteQuery != null)
+                {
+                    this.OnExecuteQuery(cmdSQL);
+                }
+
+                if (mySqlCommand is null)
+                {
+                    MySqlCommand c = new MySqlCommand(cmdSQL, MySQLConn);
+                    c.CommandTimeout = 3600;
+                    c.Transaction = MySQLTran;
+                    await c.ExecuteNonQueryAsync();
+                }
+                else
+                {
+                    mySqlCommand.CommandText = cmdSQL;
+                    mySqlCommand.Connection = MySQLConn;
+                    mySqlCommand.CommandTimeout = 3600;
+                    mySqlCommand.Transaction = MySQLTran;
+                    await mySqlCommand.ExecuteNonQueryAsync();
+                    mySqlCommand = null;
+                }
+            }
+            catch (MySqlException mException)
+            {
+                this.RollBack();
+                string errorMessage = GetErrorMessage(mException.Number);
+                Exception exception = null;
+                string command = "Fail Command -> " + cmdSQL;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    exception = new Exception(errorMessage, mException);
+                }
+                else
+                {
+                    exception = new Exception(mException.Message, mException);
+                }
+
+                Console.WriteLine(command);
+                Console.WriteLine(exception.ToString());
+                throw exception;
+            }
+        }
         public void ExecuteTransaction(string cmdSQL)
         {
             try
@@ -380,6 +474,19 @@ namespace MyConnector
         {
             ExecuteTransaction(cmdSQL);
             DataTable dt = Select(getQuery(cmdSQL, fieldReturn));
+
+            if (dt.Rows.Count > 0)
+            {
+                return dt.Rows[0][fieldReturn].ToString();
+            }
+
+            return null;
+        }
+
+        public async Task<string> ExecuteTransactionAsync(string cmdSQL, string fieldReturn)
+        {
+            ExecuteTransactionAsync(cmdSQL);
+            DataTable dt = await SelectAsync(getQuery(cmdSQL, fieldReturn));
 
             if (dt.Rows.Count > 0)
             {
