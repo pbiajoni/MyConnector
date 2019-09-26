@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MyConnector
 {
@@ -131,6 +132,38 @@ namespace MyConnector
             }
         }
 
+        public async Task<DataTable> SelectAsync(string cmd)
+        {
+            MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
+            MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);            
+
+            try
+            {
+                await Conn.OpenAsync();
+                try { Conn.BeginTransaction(IsolationLevel.ReadUncommitted); }
+                catch (Exception er) { }
+                MySqlCommand c = new MySqlCommand(cmd, Conn);
+                c.CommandTimeout = 600;
+                MySqlDataAdapter da = new MySqlDataAdapter(c);                
+                DataTable dt = new DataTable();
+                await da.FillAsync(dt);
+                await Conn.CloseAsync();
+
+                return dt;
+            }
+            catch (MySqlException er)
+            {
+                this.RollBack();
+
+                if (Conn.State != ConnectionState.Closed)
+                {
+                    Conn.Close();
+                }
+
+                throw er;
+            }
+        }
+
         public DataTable Select(string cmdSQL)
         {
             Console.WriteLine(cmdSQL);
@@ -221,6 +254,7 @@ namespace MyConnector
                 this.CloseConnection();
             }
         }
+
 
         public bool OpenConnection()
         {
