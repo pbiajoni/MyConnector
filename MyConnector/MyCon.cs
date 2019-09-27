@@ -134,6 +134,7 @@ namespace MyConnector
 
         public async Task<DataTable> SelectAsync(string cmd)
         {
+            Console.WriteLine(cmd);
             MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
             MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);            
 
