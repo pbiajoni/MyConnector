@@ -132,9 +132,19 @@ namespace MyConnector
             }
         }
 
+
+        void AvoidInjection(string cmd)
+        {
+            cmd = cmd.ToLower();
+            if(cmd.Contains("drop") || cmd.Contains("drop") || cmd.Contains("truncate"))
+            {
+                throw new Exception("This command is not acceptable. Very bad command.");
+            }
+        }
         public async Task<DataTable> SelectAsync(string cmd)
         {
             Console.WriteLine(cmd);
+            AvoidInjection(cmd);
             MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
             MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);            
 
@@ -143,7 +153,7 @@ namespace MyConnector
                 await Conn.OpenAsync();
                 try { await Conn.BeginTransactionAsync(IsolationLevel.ReadUncommitted); }
                 catch (Exception er) { }
-                MySqlCommand c = new MySqlCommand(cmd, Conn);
+                MySqlCommand c = new MySqlCommand(cmd, Conn);                
                 c.CommandTimeout = 600;
                 MySqlDataAdapter da = new MySqlDataAdapter(c);                
                 DataTable dt = new DataTable();
