@@ -87,7 +87,7 @@ namespace MyConnector.Mapping
                 if (!ReferencesExistsInDB(reference.KeyName, dbReferences))
                 {
                     cmd += "ALTER TABLE `" + Name + "` ADD CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
-                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`)";
+                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`);";
 
                     if (reference.OnDeleteAction != OnDelete.Restrict)
                     {
@@ -105,7 +105,7 @@ namespace MyConnector.Mapping
                     {
                         cmd += "ALTER TABLE " + Name + " DROP FOREIGN KEY `" + reference.KeyName + "`, DROP INDEX `" + reference.KeyName + "`;" + Environment.NewLine;
                         cmd += "ALTER TABLE `" + Name + "` ADD CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
-                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`)";
+                    "REFERENCES `" + reference.ForeignTableName + "` (`" + reference.ForeignFieldName + "`);";
 
                         if (reference.OnDeleteAction != OnDelete.Restrict)
                         {
