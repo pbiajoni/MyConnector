@@ -48,6 +48,12 @@ namespace MyConnector.Mapping
 
         public override bool Equals(object obj)
         {
+
+            if (obj is null)
+            {
+                return true;
+            }
+
             References cref = (References)obj;
 
             if(cref.FieldName != FieldName)

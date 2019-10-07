@@ -51,7 +51,7 @@ namespace MyConnector.Mapping
 
             foreach (Table table in Tables)
             {
-                if (OnValidateTable != null) { OnValidateTable(table); }
+                if (OnValidateTable != null) { OnValidateTable(table); }                
                 ValidateTable(table.Name);
             }
         }
@@ -81,6 +81,7 @@ namespace MyConnector.Mapping
         public void ValidateTable(string tableName)
         {
             Table table = new Table(tableName);
+            table.DatabaseName = this.Name;
             Table mappedTable = Tables.Find(x => x.Name == tableName);
 
             if (mappedTable == null)

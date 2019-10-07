@@ -8,6 +8,7 @@ namespace MyConnector.Mapping
     public class Table
     {
         public List<string> PrePopulateCommands { get; set; }
+        public string DatabaseName { get; internal set; }
         public int CreateIndex { get; set; }
         public string Name { get; set; }
         public string Engine { get; set; }
@@ -63,12 +64,12 @@ namespace MyConnector.Mapping
 
         bool ReferenceExistsInMap(string keyName)
         {
-            return References.Any(x => x.KeyName == keyName);
+            return References.Any(x => x.KeyName.ToLower().Trim() == keyName.ToLower().Trim());
         }
 
         bool ReferencesExistsInDB(string keyName, List<References> dbReferences)
         {
-            return dbReferences.Any(x => x.KeyName == keyName);
+            return dbReferences.Any(x => x.KeyName.ToLower().Trim() == keyName.ToLower().Trim());
         }
         public string UpdateReferences(List<References> dbReferences)
         {
@@ -101,7 +102,7 @@ namespace MyConnector.Mapping
                 }
                 else
                 {
-                    if(!reference.Equals(dbReferences.SingleOrDefault(x=>x.FieldName == reference.KeyName)))
+                    if (!reference.Equals(dbReferences.SingleOrDefault(x => x.FieldName == reference.KeyName)))
                     {
                         cmd += "ALTER TABLE " + Name + " DROP FOREIGN KEY `" + reference.KeyName + "`, DROP INDEX `" + reference.KeyName + "`;" + Environment.NewLine;
                         cmd += "ALTER TABLE `" + Name + "` ADD CONSTRAINT `" + reference.KeyName + "` FOREIGN KEY (`" + reference.FieldName + "`) " +
@@ -128,7 +129,7 @@ namespace MyConnector.Mapping
         {
             string cmd = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, " +
             "REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE " +
-            "Table_name = '" + this.Name + "' AND CONSTRAINT_NAME <> 'PRIMARY';";
+            "Table_name = '" + this.Name + "' AND table_schema = '" + this.DatabaseName + "' AND CONSTRAINT_NAME <> 'PRIMARY';";
 
             return cmd;
         }
