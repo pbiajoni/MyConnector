@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Pablo Biajoni</Authors>
-    <Company>Pablo BiajoniPablo Biajoni</Company>
+    <Company>Pablo Biajoni</Company>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageTags>MySQL</PackageTags>
     <Description>Gerenciador de bases de dados MySQL com funções de CRUD</Description>
-    <Version>1.0.54</Version>
+    <Version>1.0.55</Version>
   </PropertyGroup>
 
   <ItemGroup>

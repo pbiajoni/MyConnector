@@ -78,7 +78,7 @@ namespace MyConnector.Mapping
             return references;
         }
 
-        public void ValidateTable(string tableName)
+        public void ValidateTable(string tableName, bool validateFk = true)
         {
             Table table = new Table(tableName);
             table.DatabaseName = this.Name;
@@ -109,16 +109,23 @@ namespace MyConnector.Mapping
 
                 Console.WriteLine("Comparing tables");
                 string updateTable = mappedTable.UpdateTable(mappedTable, table);
-                string updateReferences = mappedTable.UpdateReferences(GetReferencesFromServer(table));
+                string updateReferences = "";
+                if (validateFk)
+                {
+                    updateReferences = mappedTable.UpdateReferences(GetReferencesFromServer(table));
+                }
 
                 if (!string.IsNullOrEmpty(updateTable))
                 {
                     MyCon.ExecuteTransaction(updateTable);
                 }
 
-                if (!string.IsNullOrEmpty(updateReferences))
+                if (validateFk)
                 {
-                    MyCon.ExecuteTransaction(updateReferences);
+                    if (!string.IsNullOrEmpty(updateReferences))
+                    {
+                        MyCon.ExecuteTransaction(updateReferences);
+                    }
                 }
             }
             else
