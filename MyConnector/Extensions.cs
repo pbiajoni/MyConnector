@@ -7,6 +7,12 @@ namespace MyConnector
 {
     public static class Extensions
     {
+        public static void Add(this QueryBuilder qb, string fieldName, object value, bool addSlash = false, bool removeSingleQuotes = false)
+        {
+            QueryBuilderItem item = new QueryBuilderItem(fieldName, value, addSlash);
+            item.RemoveSingleQuotes = removeSingleQuotes;
+            qb.Items.Add(item);
+        }
         public static string ToDBDateTime(this DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
