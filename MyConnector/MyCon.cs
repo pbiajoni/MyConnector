@@ -136,7 +136,7 @@ namespace MyConnector
         void AvoidInjection(string cmd)
         {
             cmd = cmd.ToLower();
-            if(cmd.Contains("drop") || cmd.Contains("drop") || cmd.Contains("truncate"))
+            if(cmd.Contains("drop table") || cmd.Contains("drop database") || cmd.Contains("truncate"))
             {
                 throw new Exception("This command is not acceptable. Very bad command.");
             }
@@ -364,6 +364,53 @@ namespace MyConnector
             }
 
             return CustomErrors.Find(x => x.Code == errorCode).Message;
+        }
+
+        public async void ExecuteTransactionAsyncWithParams(List<MySqlParameter> Parameters)
+        {
+            try
+            {
+                await OpenConnectionAsync();
+
+                if (mySqlCommand is null)
+                {
+                    MySqlCommand c = new MySqlCommand();
+                    c.Connection = MySQLConn;
+                    c.Parameters.AddRange(Parameters.ToArray());
+                    c.CommandTimeout = 3600;
+                    c.Transaction = MySQLTran;
+                    await c.ExecuteNonQueryAsync();
+                }
+                else
+                {
+                    mySqlCommand.Parameters.AddRange(Parameters.ToArray());
+                    mySqlCommand.Connection = MySQLConn;
+                    mySqlCommand.CommandTimeout = 3600;
+                    mySqlCommand.Transaction = MySQLTran;
+                    await mySqlCommand.ExecuteNonQueryAsync();
+                    mySqlCommand = null;
+                }
+            }
+            catch (MySqlException mException)
+            {
+                this.RollBack();
+                string errorMessage = GetErrorMessage(mException.Number);
+                Exception exception = null;
+                string command = "Fail Command -> " + mySqlCommand.CommandText;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    exception = new Exception(errorMessage, mException);
+                }
+                else
+                {
+                    exception = new Exception(mException.Message, mException);
+                }
+
+                Console.WriteLine(command);
+                Console.WriteLine(exception.ToString());
+                throw exception;
+            }
         }
 
         public async void ExecuteTransactionAsync(string cmdSQL)
