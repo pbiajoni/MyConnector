@@ -107,6 +107,11 @@ namespace MyConnector
             throw new Exception("Query Type must be different than None");
         }
 
+        public string InsertWithParameters()
+        {
+
+        }
+
         public string Update(object id, string identifier = "id")
         {
             string cmd = "UPDATE `" + TableMap.Name + "` SET ";
