@@ -404,6 +404,12 @@ namespace MyConnector
             return CustomErrors.Find(x => x.Code == errorCode).Message;
         }
 
+
+        public async void ExecuteTransactionAsync(QueryBuilder queryBuilder)
+        {
+            this.ExecuteTransactionWithParamsAsync(queryBuilder.GetParameters());
+        }
+
         public async void ExecuteTransactionWithParamsAsync(List<MySqlParameter> Parameters)
         {
             try
