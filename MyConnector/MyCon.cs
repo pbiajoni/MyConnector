@@ -94,7 +94,7 @@ namespace MyConnector
             }
         }
 
-        string getQuery(string cmdSQL, string chavePrimaria)
+        public string getQuery(string cmdSQL, string chavePrimaria)
         {
 
             string cmd = null;
@@ -136,7 +136,7 @@ namespace MyConnector
         void AvoidInjection(string cmd)
         {
             cmd = cmd.ToLower();
-            if(cmd.Contains("drop table") || cmd.Contains("drop database") || cmd.Contains("truncate"))
+            if (cmd.Contains("drop table") || cmd.Contains("drop database") || cmd.Contains("truncate"))
             {
                 throw new Exception("This command is not acceptable. Very bad command.");
             }
@@ -144,7 +144,7 @@ namespace MyConnector
 
         public async Task<DataTable> SelectWithParamsAsync(List<MySqlParameter> Parameters)
         {
-            
+
 
             MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
             MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
@@ -184,16 +184,16 @@ namespace MyConnector
             Console.WriteLine(cmd);
             AvoidInjection(cmd);
             MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
-            MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);            
+            MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
 
             try
             {
                 await Conn.OpenAsync();
                 try { await Conn.BeginTransactionAsync(IsolationLevel.ReadUncommitted); }
                 catch (Exception er) { }
-                MySqlCommand c = new MySqlCommand(cmd, Conn);                
+                MySqlCommand c = new MySqlCommand(cmd, Conn);
                 c.CommandTimeout = 600;
-                MySqlDataAdapter da = new MySqlDataAdapter(c);                
+                MySqlDataAdapter da = new MySqlDataAdapter(c);
                 DataTable dt = new DataTable();
                 await da.FillAsync(dt);
                 await Conn.CloseAsync();
@@ -407,10 +407,10 @@ namespace MyConnector
 
         public async void ExecuteTransactionAsync(QueryBuilder queryBuilder)
         {
-            this.ExecuteTransactionWithParamsAsync(queryBuilder.GetParameters());
+            this.ExecuteWithParametersAsync(queryBuilder.GetCommand(), queryBuilder.GetParameters());
         }
 
-        public async void ExecuteTransactionWithParamsAsync(List<MySqlParameter> Parameters)
+        public async void ExecuteWithParametersAsync(string cmd, List<MySqlParameter> Parameters)
         {
             try
             {
@@ -420,6 +420,7 @@ namespace MyConnector
                 {
                     MySqlCommand c = new MySqlCommand();
                     c.Connection = MySQLConn;
+                    c.CommandText = cmd;
                     c.Parameters.AddRange(Parameters.ToArray());
                     c.CommandTimeout = 3600;
                     c.Transaction = MySQLTran;
@@ -430,6 +431,7 @@ namespace MyConnector
                 {
                     mySqlCommand.Parameters.AddRange(Parameters.ToArray());
                     mySqlCommand.Connection = MySQLConn;
+                    mySqlCommand.CommandText = cmd;
                     mySqlCommand.CommandTimeout = 3600;
                     mySqlCommand.Transaction = MySQLTran;
                     Console.WriteLine(mySqlCommand.CommandText);
