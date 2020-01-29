@@ -9,6 +9,8 @@ namespace MyConnector
     {
         public Table TableMap { get; set; }
         public List<QueryBuilderItem> Items { get; set; }
+        public QueryType QueryType { get; set; }
+
         public QueryBuilder()
         {
             GrantList();
@@ -17,12 +19,21 @@ namespace MyConnector
         public QueryBuilder(Table table)
         {
             TableMap = table;
+            QueryType = QueryType.None;
+            GrantList();
+        }
+
+        public QueryBuilder(Table table, QueryType queryType)
+        {
+            TableMap = table;
+            QueryType = QueryType;
             GrantList();
         }
 
         public QueryBuilder(string tableName)
         {
             TableMap = new Table(tableName);
+            QueryType = QueryType.None;
             GrantList();
         }
 
