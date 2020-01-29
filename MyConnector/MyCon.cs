@@ -141,6 +141,44 @@ namespace MyConnector
                 throw new Exception("This command is not acceptable. Very bad command.");
             }
         }
+
+        public async Task<DataTable> SelectWithParamsAsync(List<MySqlParameter> Parameters)
+        {
+            
+
+            MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
+            MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
+
+            try
+            {
+                await Conn.OpenAsync();
+                try { await Conn.BeginTransactionAsync(IsolationLevel.ReadUncommitted); }
+                catch (Exception er) { }
+                MySqlCommand c = new MySqlCommand();
+                c.Parameters.AddRange(Parameters.ToArray());
+                Console.WriteLine(c.CommandText);
+                c.Connection = MySQLConn;
+                c.CommandTimeout = 600;
+                MySqlDataAdapter da = new MySqlDataAdapter(c);
+                DataTable dt = new DataTable();
+                await da.FillAsync(dt);
+                await Conn.CloseAsync();
+
+                return dt;
+            }
+            catch (MySqlException er)
+            {
+                this.RollBack();
+
+                if (Conn.State != ConnectionState.Closed)
+                {
+                    Conn.Close();
+                }
+
+                throw er;
+            }
+        }
+
         public async Task<DataTable> SelectAsync(string cmd)
         {
             Console.WriteLine(cmd);
@@ -366,7 +404,7 @@ namespace MyConnector
             return CustomErrors.Find(x => x.Code == errorCode).Message;
         }
 
-        public async void ExecuteTransactionAsyncWithParams(List<MySqlParameter> Parameters)
+        public async void ExecuteTransactionWithParamsAsync(List<MySqlParameter> Parameters)
         {
             try
             {
@@ -379,6 +417,7 @@ namespace MyConnector
                     c.Parameters.AddRange(Parameters.ToArray());
                     c.CommandTimeout = 3600;
                     c.Transaction = MySQLTran;
+                    Console.WriteLine(c.CommandText);
                     await c.ExecuteNonQueryAsync();
                 }
                 else
@@ -387,6 +426,7 @@ namespace MyConnector
                     mySqlCommand.Connection = MySQLConn;
                     mySqlCommand.CommandTimeout = 3600;
                     mySqlCommand.Transaction = MySQLTran;
+                    Console.WriteLine(mySqlCommand.CommandText);
                     await mySqlCommand.ExecuteNonQueryAsync();
                     mySqlCommand = null;
                 }
