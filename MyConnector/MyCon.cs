@@ -142,43 +142,7 @@ namespace MyConnector
             }
         }
 
-        public async Task<DataTable> SelectWithParamsAsync(List<MySqlParameter> Parameters)
-        {
-
-
-            MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
-            MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
-
-            try
-            {
-                await Conn.OpenAsync();
-                try { await Conn.BeginTransactionAsync(IsolationLevel.ReadUncommitted); }
-                catch (Exception er) { }
-                MySqlCommand c = new MySqlCommand();
-                c.Parameters.AddRange(Parameters.ToArray());
-                Console.WriteLine(c.CommandText);
-                c.Connection = MySQLConn;
-                c.CommandTimeout = 600;
-                MySqlDataAdapter da = new MySqlDataAdapter(c);
-                DataTable dt = new DataTable();
-                await da.FillAsync(dt);
-                await Conn.CloseAsync();
-
-                return dt;
-            }
-            catch (MySqlException er)
-            {
-                this.RollBack();
-
-                if (Conn.State != ConnectionState.Closed)
-                {
-                    Conn.Close();
-                }
-
-                throw er;
-            }
-        }
-
+       
         public async Task<DataTable> SelectAsync(string cmd)
         {
             Console.WriteLine(cmd);
