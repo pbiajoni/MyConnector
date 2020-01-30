@@ -142,7 +142,48 @@ namespace MyConnector
             }
         }
 
-       
+
+
+        public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MySqlParameter> parameters)
+        {
+            Console.WriteLine(cmd);
+            AvoidInjection(cmd);
+            MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
+            MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
+
+            try
+            {
+                await Conn.OpenAsync();
+                try { await Conn.BeginTransactionAsync(IsolationLevel.ReadUncommitted); }
+                catch (Exception er) { }
+                MySqlCommand c = new MySqlCommand(cmd, Conn);
+
+                foreach (MySqlParameter parameter in parameters)
+                {
+                    c.Parameters.AddWithValue(parameter.ParameterName, parameter.Value);
+                }
+
+                c.CommandTimeout = 600;
+                MySqlDataAdapter da = new MySqlDataAdapter(c);
+                DataTable dt = new DataTable();
+                await da.FillAsync(dt);
+                await Conn.CloseAsync();
+
+                return dt;
+            }
+            catch (MySqlException er)
+            {
+                this.RollBack();
+
+                if (Conn.State != ConnectionState.Closed)
+                {
+                    Conn.Close();
+                }
+
+                throw er;
+            }
+        }
+
         public async Task<DataTable> SelectAsync(string cmd)
         {
             Console.WriteLine(cmd);
@@ -374,7 +415,7 @@ namespace MyConnector
             this.ExecuteWithParametersAsync(queryBuilder.GetCommand(), queryBuilder.GetParameters());
         }
 
-        public async void ExecuteWithParametersAsync(string cmd, List<MySqlParameter> Parameters)
+        public async void ExecuteWithParametersAsync(string cmd, List<MySqlParameter> parameters)
         {
             try
             {
@@ -385,7 +426,12 @@ namespace MyConnector
                     MySqlCommand c = new MySqlCommand();
                     c.Connection = MySQLConn;
                     c.CommandText = cmd;
-                    c.Parameters.AddRange(Parameters.ToArray());
+
+                    foreach (MySqlParameter parameter in parameters)
+                    {
+                        c.Parameters.AddWithValue(parameter.ParameterName, parameter.Value);
+                    }
+
                     c.CommandTimeout = 3600;
                     c.Transaction = MySQLTran;
                     Console.WriteLine(c.CommandText);
@@ -393,7 +439,11 @@ namespace MyConnector
                 }
                 else
                 {
-                    mySqlCommand.Parameters.AddRange(Parameters.ToArray());
+                    foreach (MySqlParameter parameter in parameters)
+                    {
+                        mySqlCommand.Parameters.AddWithValue(parameter.ParameterName, parameter.Value);
+                    }
+
                     mySqlCommand.Connection = MySQLConn;
                     mySqlCommand.CommandText = cmd;
                     mySqlCommand.CommandTimeout = 3600;

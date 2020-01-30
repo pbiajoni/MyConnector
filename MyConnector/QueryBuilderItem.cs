@@ -10,6 +10,7 @@ namespace MyConnector
         public object Value { get; set; }
         public bool AddSlash { get; set; }
         public bool RemoveSingleQuotes { get; set; }
+        public bool IsMD5 { get; set; }
 
         public QueryBuilderItem()
         {

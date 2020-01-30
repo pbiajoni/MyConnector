@@ -17,6 +17,19 @@ namespace MyConnector
         private string _idFieldName { get; set; }
         private MyCon _myCon;
 
+        public MyCon Connector
+        {
+            get
+            {
+                return this._myCon;
+            }
+
+            set
+            {
+                this._myCon = value;
+            }
+        }
+
         public string IdFieldName
         {
             get
@@ -40,17 +53,26 @@ namespace MyConnector
             GrantList();
         }
 
-        public QueryBuilder(Table table)
-        {
-            TableMap = table;
-            QueryType = QueryType.None;
-            GrantList();
-        }
-
-        public QueryBuilder(Table table, QueryType queryType)
+        public QueryBuilder(Table table, QueryType queryType = QueryType.None)
         {
             TableMap = table;
             QueryType = QueryType;
+            GrantList();
+        }
+
+        public QueryBuilder(Table table, MyCon myCon)
+        {
+            TableMap = table;
+            QueryType = QueryType.None;
+            _myCon = myCon;
+            GrantList();
+        }
+
+        public QueryBuilder(Table table, MyCon myCon, QueryType queryType = QueryType.None)
+        {
+            TableMap = table;
+            QueryType = QueryType;
+            _myCon = myCon;
             GrantList();
         }
 
@@ -82,7 +104,7 @@ namespace MyConnector
 
             foreach (QueryBuilderItem item in this.Items)
             {
-                parameters.Add(new MySqlParameter(item.FieldName, item.Value));
+                parameters.Add(new MySqlParameter("@" + item.FieldName, item.Value));
             }
 
             return parameters;
@@ -129,10 +151,25 @@ namespace MyConnector
         }
 
 
-        public async Task<string> ExecuteInsertAsync(string fieldToReturn = "id")
+        public async Task<string> ExecuteWithParametersAsync(string fieldToReturn = "id")
+        {
+            if(this.QueryType == QueryType.Insert)
+            {
+                return await ExecuteInsertWithParametersAsync(fieldToReturn);
+            }
+
+            if(this.QueryType == QueryType.Update)
+            {
+                ExecuteUpdateWithParameters(this.Id);
+            }
+
+            throw new Exception("Query Type can not be none");
+        }
+
+        public async Task<string> ExecuteInsertWithParametersAsync(string fieldToReturn = "id")
         {
             this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
-            DataTable dt = await _myCon.SelectAsync(_myCon. getQuery(this.InsertWithParameters(), fieldToReturn));
+            DataTable dt = await _myCon.SelectAsync(_myCon.getQuery(this.InsertWithParameters(), fieldToReturn));
 
             if (dt.Rows.Count > 0)
             {
@@ -141,10 +178,24 @@ namespace MyConnector
 
             return null;
         }
+        public void ExecuteInsert()
+        {
+            this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
+        }
 
-        public async void ExecuteUpdateAsync(object id)
+        public void ExecuteUpdateWithParameters(object id)
         {
             this._myCon.ExecuteWithParametersAsync(this.UpdateWithParameters(id, this.IdFieldName), this.GetParameters());
+        }
+
+        public async Task<DataTable> SelectWithParametersAsync(string cmd)
+        {
+            if (this.TableMap != null)
+            {
+                cmd = cmd.Replace("@tablename", this.TableMap.Name);
+            }
+
+            return await this._myCon.SelectWithParametersAsync(cmd, GetParameters());
         }
 
         public string InsertWithParameters()
@@ -156,7 +207,15 @@ namespace MyConnector
             foreach (QueryBuilderItem item in Items)
             {
                 columns += item.FieldName + ",";
-                values += "@" + item.FieldName + ",";
+
+                if (!item.IsMD5)
+                {
+                    values += "@" + item.FieldName + ",";
+                }
+                else
+                {
+                    values += "MD5(@" + item.FieldName + "),";
+                }
             }
 
             return cmd + ("(" + columns.TrimEnd(',') + ") values (" + values.TrimEnd(',') + ");");
@@ -183,7 +242,14 @@ namespace MyConnector
 
             foreach (QueryBuilderItem item in Items)
             {
-                cmd += item.FieldName.Trim() + " = " + "@" + item.FieldName.Trim() + ",";
+                if (!item.IsMD5)
+                {
+                    cmd += item.FieldName.Trim() + " = " + "@" + item.FieldName.Trim() + ",";
+                }
+                else
+                {
+                    cmd += item.FieldName.Trim() + " = " + "MD5(@" + item.FieldName.Trim() + "),";
+                }
             }
 
             cmd = cmd.TrimEnd(',');
