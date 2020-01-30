@@ -64,19 +64,33 @@ namespace MyConnector.Examples
 
                 Table Table = new Table("tmycon");
                 Table.AddVarCharField("test", 10);
-                Table.Fields.Add(new Field()
-                {
-                    Name = "date_and_time",
-                    Default = "",
-                    Type = "datetime",
-                    AllowNull = true
-                });
+                //Table.Fields.Add(new Field()
+                //{
+                //    Name = "date_and_time",
+                //    Default = "",
+                //    Type = "datetime",
+                //    AllowNull = true
+                //});
 
-                database.Tables.Add(Table);
+                //database.Tables.Add(Table);
 
-                database.ValidateAllTables();
+                //database.ValidateAllTables();
 
-                myCon.Commit();
+                //myCon.Commit();
+                QueryBuilder queryBuilder = new QueryBuilder("tabela");
+                queryBuilder.Id = "5";
+            
+                queryBuilder.Add("campo01", "dados");
+                queryBuilder.Add("campo02", "dados02");
+                txtlog.AppendText(queryBuilder.InsertWithParameters() + Environment.NewLine);
+                txtlog.AppendText(queryBuilder.UpdateWithParameters() + Environment.NewLine);
+                //txtlog.AppendText(queryBuilder.GetCommand() + Environment.NewLine);
+
+                queryBuilder.QueryType = QueryType.Insert;
+                txtlog.AppendText(queryBuilder.GetCommandWithParameters() + Environment.NewLine);
+
+                queryBuilder.QueryType = QueryType.Update;
+                txtlog.AppendText(queryBuilder.GetCommandWithParameters());
             }
             catch (Exception er)
             {

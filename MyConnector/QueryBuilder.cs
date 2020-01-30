@@ -21,19 +21,17 @@ namespace MyConnector
         {
             get
             {
+                if (string.IsNullOrEmpty(_idFieldName))
+                {
+                    _idFieldName = "id";
+                }
+
                 return _idFieldName;
             }
 
             set
             {
-                if (string.IsNullOrEmpty(value.ToString()))
-                {
-                    _idFieldName = "id";
-                }
-                else
-                {
-                    _idFieldName = value;
-                }
+                _idFieldName = value;
             }
         }
 
@@ -110,6 +108,26 @@ namespace MyConnector
             throw new Exception("Query Type must be different than None");
         }
 
+        public string GetCommandWithParameters()
+        {
+            return GetCommandWithParameters(this.QueryType);
+        }
+
+        public string GetCommandWithParameters(QueryType queryType)
+        {
+            if (queryType == QueryType.Insert)
+            {
+                return InsertWithParameters();
+            }
+
+            if (queryType == QueryType.Update)
+            {
+                return UpdateWithParameters();
+            }
+
+            throw new Exception("Query Type must be different than None");
+        }
+
 
         public async Task<string> ExecuteInsertAsync(string fieldToReturn = "id")
         {
@@ -122,6 +140,11 @@ namespace MyConnector
             }
 
             return null;
+        }
+
+        public async void ExecuteUpdateAsync(object id)
+        {
+            this._myCon.ExecuteWithParametersAsync(this.UpdateWithParameters(id, this.IdFieldName), this.GetParameters());
         }
 
         public string InsertWithParameters()
