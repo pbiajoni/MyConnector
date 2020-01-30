@@ -1,12 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace MyConnector
 {
     public static class Extensions
     {
+
+        public static T ToOneOf<T>(this DataTable dataTable)
+        {
+            T obj = Activator.CreateInstance<T>();
+
+            foreach (var p in obj.GetType().GetProperties().Where(p => !p.GetGetMethod().GetParameters().Any()))
+            {
+                if (p != null && p.CanWrite)
+                {
+                    string name = p.Name;
+
+                    if ((dataTable.Rows[0][p.Name] != DBNull.Value))
+                    {
+                        p.SetValue(obj, dataTable.Rows[0][p.Name]);
+                    }
+
+                }
+            }
+
+            return obj;
+        }
+
+        public static List<T> TolistOf<T>(this DataTable dataTable)
+        {
+            List<T> list = Activator.CreateInstance<List<T>>();
+
+            for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                T obj = Activator.CreateInstance<T>();
+
+                foreach (var p in obj.GetType().GetProperties().Where(p => !p.GetGetMethod().GetParameters().Any()))
+                {
+                    if (p != null && p.CanWrite)
+                    {
+                        string name = p.Name;
+
+                        if ((dataTable.Rows[i][p.Name] != DBNull.Value))
+                        {
+                            p.SetValue(obj, dataTable.Rows[i][p.Name]);
+                        }
+                    }
+                }
+
+                list.Add(obj);
+            }
+
+            return list;
+        }
+
+
         public static void Add(this QueryBuilder qb, string fieldName, object value, bool addSlash = false, bool removeSingleQuotes = false)
         {
             QueryBuilderItem item = new QueryBuilderItem(fieldName, value, addSlash);
