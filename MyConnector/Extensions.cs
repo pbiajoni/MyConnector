@@ -18,12 +18,13 @@ namespace MyConnector
                 if (p != null && p.CanWrite)
                 {
                     string name = p.Name;
-
-                    if ((dataTable.Rows[0][p.Name] != DBNull.Value))
+                    if (dataTable.Columns.Contains(p.Name))
                     {
-                        p.SetValue(obj, dataTable.Rows[0][p.Name]);
+                        if ((dataTable.Rows[0][p.Name] != DBNull.Value))
+                        {
+                            p.SetValue(obj, dataTable.Rows[0][p.Name]);
+                        }
                     }
-
                 }
             }
 
@@ -43,10 +44,12 @@ namespace MyConnector
                     if (p != null && p.CanWrite)
                     {
                         string name = p.Name;
-
-                        if ((dataTable.Rows[i][p.Name] != DBNull.Value))
+                        if (dataTable.Columns.Contains(p.Name))
                         {
-                            p.SetValue(obj, dataTable.Rows[i][p.Name]);
+                            if ((dataTable.Rows[i][p.Name] != DBNull.Value))
+                            {
+                                p.SetValue(obj, dataTable.Rows[i][p.Name]);
+                            }
                         }
                     }
                 }
