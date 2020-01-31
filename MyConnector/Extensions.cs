@@ -8,6 +8,10 @@ namespace MyConnector
 {
     public static class Extensions
     {
+        public static int ToInt32(this string value)
+        {
+            return Convert.ToInt32(value);
+        }
 
         public static T ToOneOf<T>(this DataTable dataTable)
         {
