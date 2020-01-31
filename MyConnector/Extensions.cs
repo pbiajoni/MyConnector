@@ -75,6 +75,18 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
+        public static void AddDateTimeParameter(this QueryBuilder qb, string parameterName, DateTime value)
+        {
+            QueryBuilderItem item = new QueryBuilderItem(parameterName, value.ToDBDateTime());
+            qb.Items.Add(item);
+        }
+
+        public static void AddIdParameter(this QueryBuilder qb,  object value, string parameterName = "id")
+        {
+            QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
+            qb.Items.Add(item);
+        }
+
         public static string ToDBDateTime(this DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
