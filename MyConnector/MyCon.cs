@@ -434,7 +434,7 @@ namespace MyConnector
 
                     c.CommandTimeout = 3600;
                     c.Transaction = MySQLTran;
-                    Console.WriteLine(c.CommandText);
+                    Console.WriteLine(cmd);
                     await c.ExecuteNonQueryAsync();
                 }
                 else
@@ -448,7 +448,7 @@ namespace MyConnector
                     mySqlCommand.CommandText = cmd;
                     mySqlCommand.CommandTimeout = 3600;
                     mySqlCommand.Transaction = MySQLTran;
-                    Console.WriteLine(mySqlCommand.CommandText);
+                    Console.WriteLine(cmd);
                     await mySqlCommand.ExecuteNonQueryAsync();
                     mySqlCommand = null;
                 }
@@ -458,7 +458,7 @@ namespace MyConnector
                 this.RollBack();
                 string errorMessage = GetErrorMessage(mException.Number);
                 Exception exception = null;
-                string command = "Fail Command -> " + mySqlCommand.CommandText;
+                string command = "Fail Command -> " + cmd;
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
