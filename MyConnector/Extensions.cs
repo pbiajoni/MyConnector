@@ -87,6 +87,12 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
+        public static void AddNowParameter(this QueryBuilder qb, string parameterName)
+        {
+            QueryBuilderItem item = new QueryBuilderItem(parameterName, DateTime.Now.ToDBDateTime());
+            qb.Items.Add(item);
+        }
+
         public static string ToDBDateTime(this DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
