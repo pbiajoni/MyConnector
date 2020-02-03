@@ -107,6 +107,14 @@ namespace MyConnector
                 parameters.Add(new MySqlParameter("@" + item.FieldName, item.Value));
             }
 
+            if (this.QueryType == QueryType.Update)
+            {
+                if (!parameters.Exists(x => x.ParameterName == this.IdFieldName))
+                {
+                    parameters.Add(new MySqlParameter("@" + this.IdFieldName, this.Id));
+                }
+            }
+
             return parameters;
         }
 
@@ -153,12 +161,12 @@ namespace MyConnector
 
         public async Task<string> ExecuteWithParametersAsync(string fieldToReturn = "id")
         {
-            if(this.QueryType == QueryType.Insert)
+            if (this.QueryType == QueryType.Insert)
             {
                 return await ExecuteInsertWithParametersAsync(fieldToReturn);
             }
 
-            if(this.QueryType == QueryType.Update)
+            if (this.QueryType == QueryType.Update)
             {
                 ExecuteUpdateWithParameters(this.Id);
             }
@@ -185,7 +193,7 @@ namespace MyConnector
 
         public void ExecuteUpdateWithParameters(object id)
         {
-            this._myCon.ExecuteWithParametersAsync(this.UpdateWithParameters(id, this.IdFieldName), this.GetParameters());
+            this._myCon.ExecuteWithParametersAsync(this.UpdateWithParameters(this.IdFieldName), this.GetParameters());
         }
 
         public async Task<DataTable> SelectWithParametersAsync(string cmd)
@@ -233,27 +241,31 @@ namespace MyConnector
                 throw new Exception("ID Field Name can not be null");
             }
 
-            return UpdateWithParameters(this.Id.ToString(), this._idFieldName.ToString());
+            return UpdateWithParameters(this._idFieldName.ToString());
         }
 
-        public string UpdateWithParameters(object id, string identifier = "id")
+        public string UpdateWithParameters(string identifier = "id")
         {
             string cmd = "UPDATE `" + TableMap.Name + "` SET ";
 
             foreach (QueryBuilderItem item in Items)
             {
-                if (!item.IsMD5)
+                if (item.FieldName != identifier)
                 {
-                    cmd += item.FieldName.Trim() + " = " + "@" + item.FieldName.Trim() + ",";
-                }
-                else
-                {
-                    cmd += item.FieldName.Trim() + " = " + "MD5(@" + item.FieldName.Trim() + "),";
+                    if (!item.IsMD5)
+                    {
+                        cmd += item.FieldName.Trim() + " = " + "@" + item.FieldName.Trim() + ",";
+                    }
+                    else
+                    {
+                        cmd += item.FieldName.Trim() + " = " + "MD5(@" + item.FieldName.Trim() + "),";
+                    }
                 }
             }
 
             cmd = cmd.TrimEnd(',');
-            cmd += " WHERE " + identifier.Trim() + " = " + id.ToString().Trim() + ";";
+            cmd += " WHERE " + identifier.Trim() + " = @" + identifier.ToString() + ";";
+
             return cmd;
         }
 
