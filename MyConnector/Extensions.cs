@@ -13,6 +13,36 @@ namespace MyConnector
             return Convert.ToInt32(value);
         }
 
+        public static List<string> ToStringListOfIds(this DataTable dataTable, string idFieldName = "id")
+        {
+            List<string> ids = new List<string>();
+
+            if (dataTable.Columns.Contains(idFieldName))
+            {
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ids.Add(dataTable.ToRowString(idFieldName, i));
+                }
+
+                return ids;
+            }
+
+            throw new Exception(idFieldName + " does not exists in DataTable Columns");
+        }
+
+        public static List<int> ToIntListOfIds(this DataTable dataTable, string idFieldName = "id")
+        {
+            List<string> ids = ToStringListOfIds(dataTable, idFieldName);
+            List<int> int_ids = new List<int>();
+
+            foreach (string id in ids)
+            {
+                int_ids.Add(Convert.ToInt32(id));
+            }
+
+            return int_ids;
+        }
+
         public static T ToOneOf<T>(this DataTable dataTable)
         {
             T obj = Activator.CreateInstance<T>();
@@ -85,7 +115,7 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
-        public static void AddIdParameter(this QueryBuilder qb,  object value, string parameterName = "id")
+        public static void AddIdParameter(this QueryBuilder qb, object value, string parameterName = "id")
         {
             QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
             qb.Items.Add(item);
