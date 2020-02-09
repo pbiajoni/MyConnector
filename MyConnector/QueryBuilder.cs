@@ -257,7 +257,7 @@ namespace MyConnector
 
         public string DeleteWithParameters()
         {
-            string cmd = "DELETE FROM `" + TableMap.Name + "` WHERE ";
+            string cmd = "DELETE FROM `" + TableMap.Name + "`";
             string concat = " AND ";
 
             if (this.Items.Count > 0)
