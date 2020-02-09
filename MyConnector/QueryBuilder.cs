@@ -115,6 +115,11 @@ namespace MyConnector
                 }
             }
 
+            if(this.QueryType == QueryType.Delete && this.Id != null)
+            {
+                parameters.Add(new MySqlParameter("@" + this.IdFieldName, this.Id));
+            }
+
             return parameters;
         }
 
@@ -275,7 +280,7 @@ namespace MyConnector
 
             if (this.Id != null)
             {
-                cmd += IdFieldName + " = " + this.Id;
+                cmd += "@" + IdFieldName + " = " + "@" + IdFieldName;
             }
 
             return cmd + ";";
