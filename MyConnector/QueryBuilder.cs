@@ -273,7 +273,7 @@ namespace MyConnector
                 concat = " WHERE ";
             }
 
-            cmd += _idFieldName + " = " + this.Id;
+            cmd += _idFieldName + " = " + this.Id + ";";
             return cmd;
         }
 
