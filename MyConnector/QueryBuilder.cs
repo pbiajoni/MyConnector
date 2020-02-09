@@ -15,6 +15,7 @@ namespace MyConnector
         public QueryType QueryType { get; set; }
         public object Id { get; set; }
         private string _idFieldName { get; set; }
+        private bool DeleteUnlocked { get; set; }
         private MyCon _myCon;
 
         public MyCon Connector
@@ -115,7 +116,7 @@ namespace MyConnector
                 }
             }
 
-            if(this.QueryType == QueryType.Delete && this.Id != null)
+            if (this.QueryType == QueryType.Delete && this.Id != null)
             {
                 parameters.Add(new MySqlParameter("@" + this.IdFieldName, this.Id));
             }
@@ -208,6 +209,11 @@ namespace MyConnector
 
         public void ExecuteDeleteWithParametersAsync()
         {
+            if ((this.Id == null || string.IsNullOrEmpty(this.Id.ToString())) && !this.DeleteUnlocked)
+            {
+                throw new Exception("Delete without id requires DeleteUnlocked equals True");
+            }
+
             this._myCon.ExecuteWithParametersAsync(this.DeleteWithParameters(), GetParameters());
         }
 
@@ -278,9 +284,14 @@ namespace MyConnector
                 concat = " WHERE ";
             }
 
+            if ((this.Id == null || string.IsNullOrEmpty(this.Id.ToString())) && !this.DeleteUnlocked)
+            {
+                throw new Exception("Delete without id requires DeleteUnlocked equals True");
+            }
+
             if (this.Id != null)
             {
-                cmd += "@" + IdFieldName + " = " + "@" + IdFieldName;
+                cmd += IdFieldName + " = " + "@" + IdFieldName;
             }
 
             return cmd + ";";
