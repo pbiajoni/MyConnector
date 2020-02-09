@@ -168,7 +168,12 @@ namespace MyConnector
 
             if (this.QueryType == QueryType.Update)
             {
-                ExecuteUpdateWithParameters(this.Id);
+                ExecuteUpdateWithParameters();
+            }
+
+            if (this.QueryType == QueryType.Delete)
+            {
+                ExecuteDeleteWithParametersAsync();
             }
 
             throw new Exception("Query Type can not be none");
@@ -191,9 +196,14 @@ namespace MyConnector
             this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
         }
 
-        public void ExecuteUpdateWithParameters(object id)
+        public void ExecuteUpdateWithParameters()
         {
             this._myCon.ExecuteWithParametersAsync(this.UpdateWithParameters(this.IdFieldName), this.GetParameters());
+        }
+
+        public void ExecuteDeleteWithParametersAsync()
+        {
+            this._myCon.ExecuteWithParametersAsync(this.DeleteWithParameters(), GetParameters());
         }
 
         public async Task<DataTable> SelectWithParametersAsync(string cmd)
@@ -242,6 +252,29 @@ namespace MyConnector
             }
 
             return UpdateWithParameters(this._idFieldName.ToString());
+        }
+
+
+        public string DeleteWithParameters()
+        {
+            string cmd = "DELETE FROM `" + TableMap.Name + "` WHERE ";
+            string concat = " AND ";
+
+            if (this.Items.Count > 0)
+            {
+                cmd += " WHERE ";
+                foreach (QueryBuilderItem item in this.Items)
+                {
+                    cmd += item.FieldName.Trim() + " = " + "@" + item.FieldName.Trim() + " " + concat;
+                }
+            }
+            else
+            {
+                concat = " WHERE ";
+            }
+
+            cmd += _idFieldName + " = " + this.Id;
+            return cmd;
         }
 
         public string UpdateWithParameters(string identifier = "id")
