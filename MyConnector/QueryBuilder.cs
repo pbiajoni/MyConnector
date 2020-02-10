@@ -96,7 +96,7 @@ namespace MyConnector
         public List<MySqlParameter> GetParameters()
         {
 
-            if (this.Items.Count == 0)
+            if (this.Items.Count == 0 && this.QueryType != QueryType.Delete)
             {
                 throw new Exception("Query Build Items can not be null");
             }
@@ -282,6 +282,7 @@ namespace MyConnector
             else
             {
                 concat = " WHERE ";
+                cmd += concat;
             }
 
             if ((this.Id == null || string.IsNullOrEmpty(this.Id.ToString())) && !this.DeleteUnlocked)
