@@ -82,7 +82,8 @@ namespace MyConnector
                         {
                             if ((dataTable.Rows[i][p.Name] != DBNull.Value))
                             {
-                                p.SetValue(obj, dataTable.Rows[i][p.Name]);
+                                object value = dataTable.Rows[i][p.Name];
+                                p.SetValue(obj, value);
                             }
                         }
                     }
