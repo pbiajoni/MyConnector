@@ -83,6 +83,7 @@ namespace MyConnector
                             if ((dataTable.Rows[i][p.Name] != DBNull.Value))
                             {
                                 object value = dataTable.Rows[i][p.Name];
+                                //Console.WriteLine("Writing value " + value.ToString() + " for " + name + " with type " + value.GetType().ToString());
                                 p.SetValue(obj, value);
                             }
                         }

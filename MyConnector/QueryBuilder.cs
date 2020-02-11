@@ -15,7 +15,7 @@ namespace MyConnector
         public QueryType QueryType { get; set; }
         public object Id { get; set; }
         private string _idFieldName { get; set; }
-        private bool DeleteUnlocked { get; set; }
+        public bool DeleteUnlocked { get; set; }
         private MyCon _myCon;
 
         public MyCon Connector
@@ -269,7 +269,11 @@ namespace MyConnector
         public string DeleteWithParameters()
         {
             string cmd = "DELETE FROM `" + TableMap.Name + "`";
-            string concat = " AND ";
+            string concat = "";
+            if (!this.DeleteUnlocked)
+            {
+                concat = " AND ";
+            }
 
             if (this.Items.Count > 0)
             {
