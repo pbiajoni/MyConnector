@@ -20,6 +20,7 @@ namespace MyConnector
         {
             FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
             Value = value ?? throw new ArgumentNullException("Parâmetro nome:" + nameof(value)+ " - com campo nome: " + fieldName);
+            //Value = value;
             AddSlash = addSlash;
         }
 
