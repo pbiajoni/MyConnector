@@ -17,7 +17,6 @@ namespace MyConnector
         private string _idFieldName { get; set; }
         public bool DeleteUnlocked { get; set; }
         private MyCon _myCon;
-
         public MyCon Connector
         {
             get
@@ -30,7 +29,6 @@ namespace MyConnector
                 this._myCon = value;
             }
         }
-
         public string IdFieldName
         {
             get
@@ -48,19 +46,16 @@ namespace MyConnector
                 _idFieldName = value;
             }
         }
-
         public QueryBuilder()
         {
             GrantList();
         }
-
         public QueryBuilder(Table table, QueryType queryType = QueryType.None)
         {
             TableMap = table;
             QueryType = QueryType;
             GrantList();
         }
-
         public QueryBuilder(Table table, MyCon myCon)
         {
             TableMap = table;
@@ -68,7 +63,6 @@ namespace MyConnector
             _myCon = myCon;
             GrantList();
         }
-
         public QueryBuilder(Table table, MyCon myCon, QueryType queryType = QueryType.None)
         {
             TableMap = table;
@@ -76,14 +70,12 @@ namespace MyConnector
             _myCon = myCon;
             GrantList();
         }
-
         public QueryBuilder(string tableName)
         {
             TableMap = new Table(tableName);
             QueryType = QueryType.None;
             GrantList();
         }
-
         private void GrantList()
         {
             if (Items is null)
@@ -91,8 +83,6 @@ namespace MyConnector
                 Items = new List<QueryBuilderItem>();
             }
         }
-
-
         public List<MySqlParameter> GetParameters()
         {
 
@@ -123,12 +113,10 @@ namespace MyConnector
 
             return parameters;
         }
-
         public string GetCommand()
         {
             return GetCommand(this.QueryType);
         }
-
         public string GetCommand(QueryType queryType)
         {
             if (queryType == QueryType.Insert)
@@ -143,12 +131,10 @@ namespace MyConnector
 
             throw new Exception("Query Type must be different than None");
         }
-
         public string GetCommandWithParameters()
         {
             return GetCommandWithParameters(this.QueryType);
         }
-
         public string GetCommandWithParameters(QueryType queryType)
         {
             if (queryType == QueryType.Insert)
@@ -163,8 +149,6 @@ namespace MyConnector
 
             throw new Exception("Query Type must be different than None");
         }
-
-
         public async Task<string> ExecuteWithParametersAsync(string fieldToReturn = "id")
         {
             if (this.QueryType == QueryType.Insert)
@@ -184,7 +168,6 @@ namespace MyConnector
 
             throw new Exception("Query Type can not be none");
         }
-
         public async Task<string> ExecuteInsertWithParametersAsync(string fieldToReturn = "id")
         {
             this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
@@ -201,12 +184,10 @@ namespace MyConnector
         {
             this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
         }
-
         public void ExecuteUpdateWithParameters()
         {
             this._myCon.ExecuteWithParametersAsync(this.UpdateWithParameters(this.IdFieldName), this.GetParameters());
         }
-
         public void ExecuteDeleteWithParametersAsync()
         {
             if ((this.Id == null || string.IsNullOrEmpty(this.Id.ToString())) && !this.DeleteUnlocked)
@@ -216,7 +197,6 @@ namespace MyConnector
 
             this._myCon.ExecuteWithParametersAsync(this.DeleteWithParameters(), GetParameters());
         }
-
         public async Task<DataTable> SelectWithParametersAsync(string cmd)
         {
             if (this.TableMap != null)
@@ -226,7 +206,6 @@ namespace MyConnector
 
             return await this._myCon.SelectWithParametersAsync(cmd, GetParameters());
         }
-
         public string InsertWithParameters()
         {
             string cmd = "INSERT INTO `" + TableMap.Name + "` ";
@@ -249,7 +228,6 @@ namespace MyConnector
 
             return cmd + ("(" + columns.TrimEnd(',') + ") values (" + values.TrimEnd(',') + ");");
         }
-
         public string UpdateWithParameters()
         {
             if (this.Id is null)
@@ -264,8 +242,6 @@ namespace MyConnector
 
             return UpdateWithParameters(this._idFieldName.ToString());
         }
-
-
         public string DeleteWithParameters()
         {
             string cmd = "DELETE FROM `" + TableMap.Name + "`";
@@ -301,7 +277,6 @@ namespace MyConnector
 
             return cmd + ";";
         }
-
         public string UpdateWithParameters(string identifier = "id")
         {
             string cmd = "UPDATE `" + TableMap.Name + "` SET ";
@@ -326,7 +301,6 @@ namespace MyConnector
 
             return cmd;
         }
-
         public string Update(object id, string identifier = "id")
         {
             string cmd = "UPDATE `" + TableMap.Name + "` SET ";
@@ -398,6 +372,17 @@ namespace MyConnector
             }
 
             return cmd + ("(" + columns.TrimEnd(',') + ") values (" + values.TrimEnd(',') + ");");
+        }
+
+        public async Task<DataTable> SelectAsync(string cmd, MyCon myCon)
+        {
+            cmd = cmd.Replace("@tablename", TableMap.Name);
+            return await myCon.SelectAsync(cmd);
+        }
+
+        public async Task<DataTable> SelectAsync(string cmd)
+        {
+            return await SelectAsync(cmd, this._myCon);
         }
     }
 }
