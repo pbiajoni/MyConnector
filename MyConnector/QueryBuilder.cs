@@ -168,6 +168,12 @@ namespace MyConnector
 
             throw new Exception("Query Type can not be none");
         }
+
+        public void ExecuteInsertWithParameters()
+        {
+            this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
+        }
+
         public async Task<string> ExecuteInsertWithParametersAsync(string fieldToReturn = "id")
         {
             this._myCon.ExecuteWithParametersAsync(this.InsertWithParameters(), this.GetParameters());
