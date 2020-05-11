@@ -45,6 +45,11 @@ namespace MyConnector
 
         public static T ToOneOf<T>(this DataTable dataTable)
         {
+            if (dataTable.Rows.Count == 0)
+            {
+                return default(T);
+            }
+
             T obj = Activator.CreateInstance<T>();
 
             foreach (var p in obj.GetType().GetProperties().Where(p => !p.GetGetMethod().GetParameters().Any()))
