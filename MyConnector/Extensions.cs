@@ -13,6 +13,21 @@ namespace MyConnector
             return Convert.ToInt32(value);
         }
 
+        public static List<int> ToIdsIn(this DataTable dt, string fieldName = "id")
+        {
+            List<int> ids = new List<int>();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                int id = dt.ToRowInt(fieldName, i);
+                if (!ids.Contains(id))
+                {
+                    ids.Add(id);
+                }
+            }
+
+            return ids;
+        }
+
         public static List<string> ToStringListOfIds(this DataTable dataTable, string idFieldName = "id")
         {
             List<string> ids = new List<string>();

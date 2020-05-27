@@ -38,7 +38,6 @@ namespace MyConnector
         public string Database { get; set; }
 
         public bool IncludeSecurityAsserts { get; set; }
-
         public List<CustomError> CustomErrors { get; set; }
         public MyCon(string connectionString)
         {
@@ -50,7 +49,6 @@ namespace MyConnector
                 CustomErrors = new List<CustomError>();
             }
         }
-
         private string GetDBName(string connectionString)
         {
             string[] splited = connectionString.Split(';');
@@ -66,7 +64,6 @@ namespace MyConnector
 
             return null;
         }
-
         public MyCon(string username, string password, string server, string database)
         {
             Username = username ?? throw new ArgumentNullException(nameof(username));
@@ -93,7 +90,6 @@ namespace MyConnector
                 CustomErrors = new List<CustomError>();
             }
         }
-
         public string getQuery(string cmdSQL, string chavePrimaria)
         {
 
@@ -112,7 +108,6 @@ namespace MyConnector
 
             return cmd;
         }
-
         public void Initialize()
         {
             if (String.IsNullOrEmpty(this._connectionString))
@@ -131,8 +126,6 @@ namespace MyConnector
                 throw new Exception("The connection string is already initialized");
             }
         }
-
-
         void AvoidInjection(string cmd)
         {
             cmd = cmd.ToLower();
@@ -141,9 +134,6 @@ namespace MyConnector
                 throw new Exception("This command is not acceptable. Very bad command.");
             }
         }
-
-
-
         public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MySqlParameter> parameters)
         {
             Console.WriteLine(cmd);
@@ -183,7 +173,6 @@ namespace MyConnector
                 throw er;
             }
         }
-
         public async Task<DataTable> SelectAsync(string cmd)
         {
             Console.WriteLine(cmd);
@@ -217,7 +206,6 @@ namespace MyConnector
                 throw er;
             }
         }
-
         public DataTable Select(string cmdSQL)
         {
             Console.WriteLine(cmdSQL);
@@ -256,7 +244,6 @@ namespace MyConnector
                 throw er;
             }
         }
-
         public void Commit()
         {
             if (MySQLConn.State != ConnectionState.Closed)
@@ -275,7 +262,6 @@ namespace MyConnector
                 this.CloseConnection();
             }
         }
-
         public void CloseConnection()
         {
             if (MySQLConn.State != ConnectionState.Closed)
@@ -308,8 +294,6 @@ namespace MyConnector
                 this.CloseConnection();
             }
         }
-
-
         public async Task<bool> OpenConnectionAsync()
         {
             try
@@ -353,7 +337,6 @@ namespace MyConnector
             }
 
         }
-
         public bool OpenConnection()
         {
             try
@@ -397,7 +380,6 @@ namespace MyConnector
             }
 
         }
-
         string GetErrorMessage(int errorCode)
         {
             //errors.Add(new Error() { Code = 1451, Message = "Este registro não pode ser removido pois contém dependências" });
@@ -408,13 +390,10 @@ namespace MyConnector
 
             return CustomErrors.Find(x => x.Code == errorCode).Message;
         }
-
-
         public async void ExecuteTransactionAsync(QueryBuilder queryBuilder)
         {
             this.ExecuteWithParametersAsync(queryBuilder.GetCommand(), queryBuilder.GetParameters());
         }
-
         public async void ExecuteWithParametersAsync(string cmd, List<MySqlParameter> parameters)
         {
             try
@@ -474,7 +453,6 @@ namespace MyConnector
                 throw exception;
             }
         }
-
         public async void ExecuteTransactionAsync(string cmdSQL)
         {
             try
@@ -575,7 +553,6 @@ namespace MyConnector
                 throw exception;
             }
         }
-
         public void NewCommand()
         {
             mySqlCommand = new MySqlCommand();
@@ -602,7 +579,6 @@ namespace MyConnector
 
             return null;
         }
-
         public async Task<string> ExecuteTransactionAsync(string cmdSQL, string fieldReturn)
         {
             ExecuteTransactionAsync(cmdSQL);
@@ -615,7 +591,6 @@ namespace MyConnector
 
             return null;
         }
-
         public bool Exists(string tableName, string fieldName, string value, string Id = null)
         {
             string stmt = "";
@@ -628,7 +603,6 @@ namespace MyConnector
             string cmd = "select Id from " + tableName + " where " + fieldName + " = '" + value + "' " + stmt + ";";
             return HasRows(cmd);
         }
-
         public bool HasRows(string cmdSQL)
         {
             DataTable dt = Select(cmdSQL);
@@ -640,6 +614,5 @@ namespace MyConnector
 
             return false;
         }
-
     }
 }
