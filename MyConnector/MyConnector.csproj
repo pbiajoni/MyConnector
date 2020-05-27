@@ -8,7 +8,7 @@
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageTags>MySQL</PackageTags>
     <Description>Gerenciador de bases de dados MySQL com funções de CRUD</Description>
-    <Version>1.0.98</Version>
+    <Version>1.0.99</Version>
     <Configurations>Debug;Release;Debug Aldeia</Configurations>
   </PropertyGroup>
 

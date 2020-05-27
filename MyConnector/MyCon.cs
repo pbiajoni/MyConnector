@@ -134,6 +134,19 @@ namespace MyConnector
                 throw new Exception("This command is not acceptable. Very bad command.");
             }
         }
+
+        public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MyParameter> parameters)
+        {
+            List<MySqlParameter> _params = new List<MySqlParameter>();
+
+            foreach (MyParameter p in parameters)
+            {
+                _params.Add(new MySqlParameter(p.ParameterName, p.ParameterValue));
+            }
+
+            return await SelectWithParametersAsync(cmd, _params);
+        }
+
         public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MySqlParameter> parameters)
         {
             Console.WriteLine(cmd);
@@ -393,6 +406,17 @@ namespace MyConnector
         public async void ExecuteTransactionAsync(QueryBuilder queryBuilder)
         {
             this.ExecuteWithParametersAsync(queryBuilder.GetCommand(), queryBuilder.GetParameters());
+        }
+        public async void ExecuteWithParametersAsync(string cmd, List<MyParameter> parameters)
+        {
+            List<MySqlParameter> _params = new List<MySqlParameter>();
+
+            foreach (MyParameter p in parameters)
+            {
+                _params.Add(new MySqlParameter(p.ParameterName, p.ParameterValue));
+            }
+
+            ExecuteWithParametersAsync(cmd, _params);
         }
         public async void ExecuteWithParametersAsync(string cmd, List<MySqlParameter> parameters)
         {
