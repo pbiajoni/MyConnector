@@ -131,6 +131,16 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
+        public static void AddParameter(this QueryBuilder qb, string parameterName, object value, bool addCase = true, bool IsMD5 = false)
+        {
+            if (addCase)
+            {
+                QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
+                item.IsMD5 = IsMD5;
+                qb.Items.Add(item);
+            }
+        }
+
         public static void AddDateTimeParameter(this QueryBuilder qb, string parameterName, DateTime value)
         {
             QueryBuilderItem item = new QueryBuilderItem(parameterName, value.ToDBDateTime());

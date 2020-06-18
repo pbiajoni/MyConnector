@@ -78,7 +78,7 @@ namespace MyConnector.Mapping
             return references;
         }
 
-        public void ValidateTable(string tableName, bool validateFk = true)
+        public void ValidateTable(string tableName, bool validateFk = true, bool validateOnLocal = false)
         {
             Table table = new Table(tableName);
             table.DatabaseName = this.Name;
