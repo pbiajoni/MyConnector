@@ -124,7 +124,7 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
-        public static void AddParameter(this QueryBuilder qb, string parameterName, object value, bool IsMD5 = false)
+        public static void AddParameterCase(this QueryBuilder qb, string parameterName, object value, bool IsMD5 = false)
         {
             QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
             item.IsMD5 = IsMD5;
