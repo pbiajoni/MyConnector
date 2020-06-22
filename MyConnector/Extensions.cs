@@ -147,6 +147,20 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
+        /// <summary>
+        /// Add if datetime has value
+        /// </summary>
+        /// <param name="parameterName"></param>
+        /// <param name="value"></param>
+        public static void AddDateTimeParameterCase(this QueryBuilder qb, string parameterName, DateTime? value)
+        {
+            if (value.HasValue)
+            {
+                QueryBuilderItem item = new QueryBuilderItem(parameterName, value.Value.ToDBDateTime());
+                qb.Items.Add(item);
+            }
+        }
+
         public static void AddIdParameter(this QueryBuilder qb, object value, string parameterName = "id")
         {
             QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
