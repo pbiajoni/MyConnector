@@ -140,7 +140,7 @@ namespace MyConnector
         {
             if (ConsoleQueryEvents)
             {
-                Console.WriteLine(DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss") + " MyConnector: " + cmd);
+                Console.WriteLine("MyConnector: " + cmd);
             }
         }
 
@@ -454,7 +454,7 @@ namespace MyConnector
 
                     c.CommandTimeout = 3600;
                     c.Transaction = MySQLTran;
-                    Console.WriteLine(cmd);
+                    ConsoleCmd(cmd);
                     await c.ExecuteNonQueryAsync();
                 }
                 else

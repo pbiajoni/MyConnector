@@ -13,10 +13,12 @@ namespace MyConnector.Mapping
         public MyCon MyCon { get; set; }
         public string Name { get; set; }
         public List<Table> Tables { get; set; }
+        public bool ConsoleQueryEvents { get; set; }
 
         public Database(string name, MyCon myCon) : this(name)
         {
             MyCon = myCon ?? throw new ArgumentNullException(nameof(myCon));
+            ConsoleQueryEvents = myCon.ConsoleQueryEvents;
         }
 
         public Database()
@@ -37,13 +39,20 @@ namespace MyConnector.Mapping
             }
         }
 
+        void ConsoleCmd(string cmd)
+        {
+            if (ConsoleQueryEvents)
+            {
+                Console.WriteLine("MyConnector: " + cmd);
+            }
+        }
         public Table GetTable(string tableName)
         {
             return Tables.Single(x => x.Name == tableName);
         }
         public void ValidateAllTables()
         {
-            if(Tables.Count == 0)
+            if (Tables.Count == 0)
             {
                 throw new Exception("There are no tables to validate");
             }
@@ -51,14 +60,14 @@ namespace MyConnector.Mapping
 
             foreach (Table table in Tables)
             {
-                if (OnValidateTable != null) { OnValidateTable(table); }                
+                if (OnValidateTable != null) { OnValidateTable(table); }
                 ValidateTable(table.Name);
             }
         }
 
         public List<References> GetReferencesFromServer(Table table)
         {
-            Console.WriteLine("getting references from server of table " + table.Name);
+            ConsoleCmd("getting references from server of table " + table.Name);
             string cmd = table.GetReferencesFromServer();
             DataTable dt = MyCon.Select(cmd);
 
@@ -102,12 +111,13 @@ namespace MyConnector.Mapping
                         Type = dt.Rows[i]["Type"].ToString(),
                         AllowNull = dt.Rows[i]["Null"].ToString() == "YES" ? true : false,
                         Key = dt.Rows[i]["Key"].ToString(),
-                        Default =  dt.Rows[i]["Default"].ToString(),
-                        Extra = dt.Rows[i]["Extra"].ToString()
+                        Default = dt.Rows[i]["Default"].ToString(),
+                        Extra = dt.Rows[i]["Extra"].ToString(),
+                        ConsoleQueryEvents = this.ConsoleQueryEvents
                     });
                 }
 
-                Console.WriteLine("Comparing tables");
+                ConsoleCmd("Comparing tables");
                 string updateTable = mappedTable.UpdateTable(mappedTable, table);
                 string updateReferences = "";
                 if (validateFk)
