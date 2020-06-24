@@ -36,6 +36,7 @@ namespace MyConnector
         public int Port { get; set; }
         public string Server { get; set; }
         public string Database { get; set; }
+        public bool ConsoleQueryEvents { get; set; }
 
         public bool IncludeSecurityAsserts { get; set; }
         public List<CustomError> CustomErrors { get; set; }
@@ -135,6 +136,19 @@ namespace MyConnector
             }
         }
 
+        void ConsoleCmd(string cmd)
+        {
+            if (ConsoleQueryEvents)
+            {
+                Console.WriteLine(DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss") + " MyConnector: " + cmd);
+            }
+        }
+
+        void ConsoleEvents(string str)
+        {
+            Console.WriteLine(DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss") + " MyConnector: " + str);
+        }
+
         public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MyParameter> parameters)
         {
             List<MySqlParameter> _params = new List<MySqlParameter>();
@@ -149,7 +163,8 @@ namespace MyConnector
 
         public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MySqlParameter> parameters)
         {
-            Console.WriteLine(cmd);
+            ConsoleCmd(cmd);
+
             AvoidInjection(cmd);
             MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
             MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
@@ -188,8 +203,10 @@ namespace MyConnector
         }
         public async Task<DataTable> SelectAsync(string cmd)
         {
-            Console.WriteLine(cmd);
+            ConsoleCmd(cmd);
+
             AvoidInjection(cmd);
+
             MySqlConnectionStringBuilder myCommString = new MySqlConnectionStringBuilder(_connectionString);
             MySqlConnection Conn = new MySqlConnection(myCommString.ConnectionString);
 
@@ -221,7 +238,7 @@ namespace MyConnector
         }
         public DataTable Select(string cmdSQL)
         {
-            Console.WriteLine(cmdSQL);
+            ConsoleCmd(cmdSQL);
 
             if (this.OnExecuteQuery != null)
             {
@@ -262,7 +279,7 @@ namespace MyConnector
             if (MySQLConn.State != ConnectionState.Closed)
             {
                 MySQLTran.Commit();
-                Console.WriteLine("commited");
+                ConsoleEvents("Commited");
 
                 if (OnCommited != null)
                 {
@@ -280,7 +297,7 @@ namespace MyConnector
             if (MySQLConn.State != ConnectionState.Closed)
             {
                 MySQLConn.Close();
-                Console.WriteLine("conection closed");
+                ConsoleEvents("Connection Closed");
 
                 if (OnCloseConnection != null)
                 {
@@ -294,7 +311,7 @@ namespace MyConnector
             if (MySQLConn.State != ConnectionState.Closed)
             {
                 MySQLTran.Rollback();
-                Console.WriteLine("rollback");
+                ConsoleEvents("RollBack");
 
                 if (OnRollBack != null)
                 {
@@ -326,7 +343,7 @@ namespace MyConnector
 
                     if (MySQLConn.State == ConnectionState.Open)
                     {
-                        Console.WriteLine("connection is open");
+                        ConsoleEvents("Connection is now openned");
                         if (this.OnOpenConnection != null)
                         {
                             this.OnOpenConnection();
@@ -369,7 +386,7 @@ namespace MyConnector
 
                     if (MySQLConn.State == ConnectionState.Open)
                     {
-                        Console.WriteLine("connection is open");
+                        ConsoleEvents("Connection is now openned");
                         if (this.OnOpenConnection != null)
                         {
                             this.OnOpenConnection();
@@ -451,7 +468,7 @@ namespace MyConnector
                     mySqlCommand.CommandText = cmd;
                     mySqlCommand.CommandTimeout = 3600;
                     mySqlCommand.Transaction = MySQLTran;
-                    Console.WriteLine(cmd);
+                    ConsoleCmd(cmd);
                     await mySqlCommand.ExecuteNonQueryAsync();
                     mySqlCommand = null;
                 }
@@ -472,8 +489,8 @@ namespace MyConnector
                     exception = new Exception(mException.Message, mException);
                 }
 
-                Console.WriteLine(command);
-                Console.WriteLine(exception.ToString());
+                ConsoleCmd(command);
+                ConsoleEvents(exception.ToString());
                 throw exception;
             }
         }
@@ -482,7 +499,7 @@ namespace MyConnector
             try
             {
                 await OpenConnectionAsync();
-                Console.WriteLine(cmdSQL);
+                ConsoleCmd(cmdSQL);
 
                 if (this.OnExecuteQuery != null)
                 {
@@ -522,8 +539,8 @@ namespace MyConnector
                     exception = new Exception(mException.Message, mException);
                 }
 
-                Console.WriteLine(command);
-                Console.WriteLine(exception.ToString());
+                ConsoleCmd(command);
+                ConsoleEvents(exception.ToString());
                 throw exception;
             }
         }
@@ -532,7 +549,7 @@ namespace MyConnector
             try
             {
                 OpenConnection();
-                Console.WriteLine(cmdSQL);
+                ConsoleCmd(cmdSQL);
 
                 if (this.OnExecuteQuery != null)
                 {
@@ -572,8 +589,8 @@ namespace MyConnector
                     exception = new Exception(mException.Message, mException);
                 }
 
-                Console.WriteLine(command);
-                Console.WriteLine(exception.ToString());
+                ConsoleCmd(command);
+                ConsoleEvents(exception.ToString());
                 throw exception;
             }
         }
