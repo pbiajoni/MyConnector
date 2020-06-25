@@ -115,7 +115,6 @@ namespace MyConnector
             return list;
         }
 
-
         public static void Add(this QueryBuilder qb, string fieldName, object value, bool addSlash = false, bool removeSingleQuotes = false)
         {
             QueryBuilderItem item = new QueryBuilderItem(fieldName, value, addSlash);
@@ -136,6 +135,15 @@ namespace MyConnector
             {
                 QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
                 item.IsMD5 = IsMD5;
+                qb.Items.Add(item);
+            }
+        }
+
+        public static void AddParameterCase(this QueryBuilder qb, string parameterName, object value)
+        {
+            if (!(value is null))
+            {
+                QueryBuilderItem item = new QueryBuilderItem(parameterName, value);
                 qb.Items.Add(item);
             }
         }

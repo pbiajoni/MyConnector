@@ -146,7 +146,7 @@ namespace MyConnector
 
         void ConsoleEvents(string str)
         {
-            Console.WriteLine(DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss") + " MyConnector: " + str);
+            Console.WriteLine("MyConnector: " + str);
         }
 
         public async Task<DataTable> SelectWithParametersAsync(string cmd, List<MyParameter> parameters)
