@@ -84,6 +84,48 @@ namespace MyConnector
             return obj;
         }
 
+        public static List<T> TolistOf<T>(this DataTable dataTable, Dictionary<string, string> startWith)
+        {
+            List<T> list = Activator.CreateInstance<List<T>>();
+
+            for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                T obj = Activator.CreateInstance<T>();
+
+                foreach (var p in obj.GetType().GetProperties().Where(p => !p.GetGetMethod().GetParameters().Any()))
+                {
+                    if (p != null && p.CanWrite)
+                    {
+                        string name = p.Name;
+                        if (dataTable.Columns.Contains(p.Name))
+                        {
+                            if ((dataTable.Rows[i][p.Name] != DBNull.Value))
+                            {
+                                object value = dataTable.Rows[i][p.Name];
+
+
+                                if (startWith.ContainsKey(name))
+                                {
+                                    string startWithString = "";
+                                    bool resultStartWith = startWith.TryGetValue(name, out startWithString);
+                                    if (!resultStartWith) { Console.WriteLine("MyConnector: Can not [startwith] method the field called " + name); }
+                                    p.SetValue(obj, startWithString + "" + value);
+                                }
+                                else
+                                {
+                                    p.SetValue(obj, value);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                list.Add(obj);
+            }
+
+            return list;
+        }
+
         public static List<T> TolistOf<T>(this DataTable dataTable)
         {
             List<T> list = Activator.CreateInstance<List<T>>();

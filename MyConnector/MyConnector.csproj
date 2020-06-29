@@ -1,26 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Pablo Biajoni</Authors>
-    <Company>Pablo Biajoni</Company>
-    <PackageLicenseFile>license.txt</PackageLicenseFile>
-    <PackageTags>MySQL</PackageTags>
-    <Description>Gerenciador de bases de dados MySQL com funções de CRUD</Description>
-    <Version>1.0.107</Version>
-    <Configurations>Debug;Release;Debug Aldeia</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>Pablo Biajoni</Authors>
+		<Company>Pablo Biajoni</Company>
+		<PackageLicenseFile>license.txt</PackageLicenseFile>
+		<PackageTags>MySQL</PackageTags>
+		<Description>Gerenciador de bases de dados MySQL com funções de CRUD</Description>
+		<Version>1.0.110</Version>
+		<Configurations>Debug;Release;Debug Aldeia</Configurations>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.20" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MySql.Data" Version="8.0.20" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\license.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\license.txt">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
