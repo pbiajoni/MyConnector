@@ -2,11 +2,67 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 
 namespace MyConnector
 {
     public static class Extensions
     {
+        public static void AddParameters(this QueryBuilder queryBuilder, object entity, List<string> ignore = null)
+        {
+
+            foreach (var p in entity.GetType().GetProperties().Where(p => !p.GetGetMethod().GetParameters().Any()))
+            {
+                if (!(p is null) && p.CanRead)
+                {
+                    if(ignore is null)
+                    {
+
+                        object value = p.GetValue(entity, null);
+                        queryBuilder.AddParameter(p.Name.ToLower(), value);
+                    }
+                    else
+                    {
+                        if (!ignore.Contains(p.Name))
+                        {
+
+                            object value = p.GetValue(entity, null);
+                            queryBuilder.AddParameter(p.Name.ToLower(), value);
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        public static void AddParametersCase(this QueryBuilder queryBuilder, object entity, List<string> ignore)
+        {
+
+            foreach (var p in entity.GetType().GetProperties().Where(p => !p.GetGetMethod().GetParameters().Any()))
+            {
+                if (!(p is null) && p.CanRead)
+                {
+                    if (ignore is null)
+                    {
+
+                        object value = p.GetValue(entity, null);
+                        queryBuilder.AddParameterCase(p.Name.ToLower(), value);
+                    }
+                    else
+                    {
+                        if (!ignore.Contains(p.Name))
+                        {
+
+                            object value = p.GetValue(entity, null);
+                            queryBuilder.AddParameterCase(p.Name.ToLower(), value);
+                        }
+                    }
+
+                }
+            }
+
+        }
         public static int ToInt32(this string value)
         {
             return Convert.ToInt32(value);
