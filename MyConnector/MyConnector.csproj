@@ -8,12 +8,12 @@
 		<PackageLicenseFile>license.txt</PackageLicenseFile>
 		<PackageTags>MySQL</PackageTags>
 		<Description>Gerenciador de bases de dados MySQL com funções de CRUD</Description>
-		<Version>1.0.111</Version>
+		<Version>1.0.113</Version>
 		<Configurations>Debug;Release;Debug Aldeia</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MySql.Data" Version="8.0.20" />
+		<PackageReference Include="MySql.Data" Version="8.0.21" />
 	</ItemGroup>
 
 	<ItemGroup>

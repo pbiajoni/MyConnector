@@ -3,11 +3,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MyConnector
 {
     public static class Extensions
     {
+        public async static Task<DataTable> SelectAsync(this MyCon myCon, string cmd, string paramName, object paramValue)
+        {
+            return await myCon.SelectWithParametersAsync(cmd, new List<MyParameter>()
+            {
+                 new MyParameter(paramName, paramValue)
+            });
+        }
         public static void AddParameters(this QueryBuilder queryBuilder, object entity, List<string> ignore = null)
         {
 
@@ -15,7 +23,7 @@ namespace MyConnector
             {
                 if (!(p is null) && p.CanRead)
                 {
-                    if(ignore is null)
+                    if (ignore is null)
                     {
 
                         object value = p.GetValue(entity, null);
