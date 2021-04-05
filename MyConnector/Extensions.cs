@@ -235,6 +235,14 @@ namespace MyConnector
             qb.Items.Add(item);
         }
 
+        public static void SetNull(this QueryBuilder qb, string parameterName)
+        {
+            QueryBuilderItem item = new QueryBuilderItem();
+            item.FieldName = parameterName;
+            item.Value = null;
+            qb.Items.Add(item);
+        }
+
         public static void AddParameterCase(this QueryBuilder qb, string parameterName, object value, bool addCase = true, bool IsMD5 = false)
         {
             if (addCase)
