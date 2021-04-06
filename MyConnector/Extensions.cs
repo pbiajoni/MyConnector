@@ -221,6 +221,10 @@ namespace MyConnector
             return list;
         }
 
+        public static string AddSlashes(this string text)
+        {
+            return Utils.AddSlash(text);
+        }
         public static void Add(this QueryBuilder qb, string fieldName, object value, bool addSlash = false, bool removeSingleQuotes = false)
         {
             QueryBuilderItem item = new QueryBuilderItem(fieldName, value, addSlash);
