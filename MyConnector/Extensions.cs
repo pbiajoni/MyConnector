@@ -221,6 +221,11 @@ namespace MyConnector
             return list;
         }
 
+        public static string StripSlashes(this string text)
+        {
+            return Utils.StripSlashes(text);
+        }
+
         public static string AddSlashes(this string text)
         {
             return Utils.AddSlash(text);
